@@ -1,8 +1,11 @@
 
 .wrapper.auth {
   display: flex;
-  flex: 1;
   flex-direction: column;
+  align-items: center;
+  place-content: center;
+  flex: 1;
+  margin: 20px 5% 141px;
 
 
   .signin-wrapper {

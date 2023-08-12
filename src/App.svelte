@@ -5,12 +5,18 @@
     import Login from "./routes/Login.svelte";
     import Signup from "./routes/Signup.svelte";
     import Health from "./routes/Health.svelte";
+    import FAQ from "./routes/Faq.svelte";
+    import Rules from "./routes/Rules.svelte";
+    import NewLobby from "./routes/NewLobby.svelte";
 </script>
 
 <Router>
     <Route path="/" component={Home}/>
-    <Route path="/game" component={Game}/>
+    <Route path="/game/:room" component={Game}/>
+    <Route path="/faq" component={FAQ}/>
+    <Route path="/rules" component={Rules}/>
     <Route path="/login" component={Login}/>
     <Route path="/signup" component={Signup}/>
     <Route path="/health" component={Health}/>
+    <Route path="/create-lobby/:room" component={NewLobby}/>
 </Router>

@@ -6,7 +6,7 @@
 </script>
 
 <div class="player-block">
-    <div class="id {isActive ? 'active' : ''}">
+    <div class="id {isActive ? 'active' : 'inactive'}">
         {id}
     </div>
     <div class="info">

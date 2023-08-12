@@ -1,12 +1,17 @@
 <script>
     import bg from "../assets/bg.png";
     import { getCookie } from '../lib/utils/cookies.js';
+    import {getProfile} from "../lib/utils/getProfile.js";
+    import {generateRange} from "../lib/utils/mmr.js";
+    import {navigate} from "svelte-routing";
 
-    function checkCookieAndRedirect() {
-        const userCookie = getCookie('token'); // Replace 'yourCookieName' with the name of your cookie
+    async function checkCookieAndRedirect() {
+        const userCookie = getCookie('token');
 
         if (userCookie) {
-            window.location.href = '/lobby';
+            let profile = await getProfile(userCookie);
+            let roomNumber = `${profile.username}#${generateRange(profile.mmr)}`
+            navigate(`/create-lobby/${roomNumber}`);
         } else {
             window.location.href = '/signup';
         }

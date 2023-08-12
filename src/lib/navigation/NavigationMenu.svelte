@@ -3,10 +3,14 @@
     import {getCookie} from "../utils/cookies.js";
     import {getProfile} from "../utils/getProfile.js";
     import {onMount} from "svelte";
+    import {generateRange} from "../utils/mmr.js";
 
     let signInVisible = false;
     let user = "GUEST";
     let mmr = 0;
+
+    let lobbylink = "/singin";
+
 
     async function loadProfile() {
         const token = getCookie('token');
@@ -15,10 +19,12 @@
             user = profile.username;
             mmr = profile.mmr;
             signInVisible = false;
+            lobbylink = `/create-lobby/${profile.username}#${generateRange(profile.mmr)}`
         } else {
             signInVisible = false;
         }
     }
+
 
 
     onMount(() => {
@@ -36,8 +42,8 @@
             <span>Match</span>
         </div>
         <NavItem to="/" label="Home"/>
-        <NavItem to="/play" label="Play"/>
-        <NavItem to="/create-lobby" label="Create a lobby"/>
+        <NavItem to="/faq" label="How to play"/>
+        <NavItem to="{lobbylink}" label="Create a lobby"/>
         <NavItem to="/rules" label="Rules"/>
     </div>
     <div class="right">

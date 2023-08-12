@@ -1,12 +1,19 @@
 <script>
 
     import {setCookie} from "../lib/utils/cookies.js";
+    import {getProfile} from "../lib/utils/getProfile.js";
+    import {generateRange} from "../lib/utils/mmr.js";
+    import {navigate} from "svelte-routing";
 
     let email = "";
     let password = "";
 
     function navigateToSignup() {
         window.location.href = '/signup';
+    }
+
+    function getRandomInt(max) {
+        return Math.floor(Math.random() * max);
     }
 
     async function login() {
@@ -30,7 +37,10 @@
         }
 
         setCookie('token', data.message)
-        window.location.href = '/lobby'
+
+        let profile = await getProfile(data.message);
+        let roomNumber = `${profile.username}#${generateRange(profile.mmr)}`
+        navigate(`/create-lobby/${roomNumber}`);
     }
 
     function handleKeydown(event) {

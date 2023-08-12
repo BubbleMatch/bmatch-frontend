@@ -1,0 +1,29 @@
+.wrapper.rules {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  margin: 20px 5% 141px;
+
+  .rules {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .block {
+    display: flex;
+    flex-direction: column;
+  }
+
+  h1, h2 {
+    color: white;
+    text-align: justify;
+  }
+
+  p, ul > li {
+    color: #A8A3AD;
+    text-align: justify;
+  }
+
+  overflow-y: auto;
+}

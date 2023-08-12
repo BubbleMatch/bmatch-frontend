@@ -35,7 +35,7 @@
   }
 }
 
-.wrapper {
+.wrapper.game {
   display: flex;
   align-items: center;
   flex-direction: row;
@@ -159,6 +159,17 @@
   right: 50px;
   font-size: 2rem;
   color: rgba(255, 255, 255, 1);
+}
+
+.id.inactive:before{
+  position: relative;
+  display: flex;
+  align-self: center;
+  content: '→';
+  z-index: 2;
+  right: 50px;
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0);
 }
 
 .player-block {

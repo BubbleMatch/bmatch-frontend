@@ -18,7 +18,7 @@
 
 </script>
 
-<div class="wrapper">
+<div class="wrapper game">
     <div class="bg">
         <GameField/>
     </div>
