@@ -1,26 +1,62 @@
 <script>
-    function navigateToLogin() {
+
+    import {setCookie} from "../lib/utils/cookies.js";
+
+    let email = "";
+    let password = "";
+
+    function navigateToSignup() {
         window.location.href = '/signup';
     }
 
+    async function login() {
+        const response = await fetch('http://localhost:8002/api/user/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                email,
+                password,
+            }),
+        });
+
+        const data = await response.json();
+
+        if(response.status !== 200){
+            alert(data.message);
+
+            return;
+        }
+
+        setCookie('token', data.message)
+        window.location.href = '/lobby'
+    }
+
+    function handleKeydown(event) {
+        if (event.key === 'Enter' || event.key === ' ') {
+            navigateToSignup();
+        }
+    }
 </script>
+
 <div class="wrapper auth">
     <div class="signin-wrapper">
         BUBBLE MATCH
     </div>
     <div class="edits-wrapper">
         <div class="nav">
-            <input placeholder="Gmail" type="text">
-            <input placeholder="Password" type="password">
-            <div class="button">Sign in</div>
+            <input bind:value={email} placeholder="Gmail" type="text">
+            <input bind:value={password} placeholder="Password" type="password">
+            <div class="button" on:click={login}>Sign in</div>
             <div class="info">
                 <div class="grey">Still not have an account?</div>
                 <div
                         class="red"
                         role="button"
                         tabindex="0"
-                        on:click={navigateToLogin}
-                        on:keydown={() => {}}>
+                        on:click={navigateToSignup}
+                        on:keydown={handleKeydown}>
                     Sign up
                 </div>
             </div>

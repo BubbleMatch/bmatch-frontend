@@ -4,6 +4,7 @@
     import Game from "./routes/Game.svelte";
     import Login from "./routes/Login.svelte";
     import Signup from "./routes/Signup.svelte";
+    import Health from "./routes/Health.svelte";
 </script>
 
 <Router>
@@ -11,4 +12,5 @@
     <Route path="/game" component={Game}/>
     <Route path="/login" component={Login}/>
     <Route path="/signup" component={Signup}/>
+    <Route path="/health" component={Health}/>
 </Router>

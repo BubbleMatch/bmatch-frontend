@@ -1,12 +1,32 @@
 <script>
     import NavItem from "./NavItem.svelte";
+    import {getCookie} from "../utils/cookies.js";
+    import {getProfile} from "../utils/getProfile.js";
+    import {onMount} from "svelte";
 
-
-
-    // todo: auth
     let signInVisible = false;
     let user = "GUEST";
     let mmr = 0;
+
+    async function loadProfile() {
+        const token = getCookie('token');
+        if (token !== null) {
+            let profile = await getProfile(token);
+            user = profile.username;
+            mmr = profile.mmr;
+            signInVisible = false;
+        } else {
+            signInVisible = false;
+        }
+    }
+
+
+    onMount(() => {
+        if (getCookie('token') !== null) {
+            loadProfile();
+        }
+    });
+
 </script>
 
 <div class="navigationMenu">

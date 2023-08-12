@@ -3,7 +3,7 @@
     import { getCookie } from '../lib/utils/cookies.js';
 
     function checkCookieAndRedirect() {
-        const userCookie = getCookie('yourCookieName'); // Replace 'yourCookieName' with the name of your cookie
+        const userCookie = getCookie('token'); // Replace 'yourCookieName' with the name of your cookie
 
         if (userCookie) {
             window.location.href = '/lobby';
