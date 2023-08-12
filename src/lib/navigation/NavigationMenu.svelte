@@ -1,6 +1,12 @@
 <script>
     import NavItem from "./NavItem.svelte";
-    import {Link} from "svelte-routing";
+
+
+
+    // todo: auth
+    let signInVisible = false;
+    let user = "GUEST";
+    let mmr = 0;
 </script>
 
 <div class="navigationMenu">
@@ -15,9 +21,12 @@
         <NavItem to="/rules" label="Rules"/>
     </div>
     <div class="right">
-        <div class="login" style="display:none;">Sign in</div>
-        <div class="user" style="display:none;">Username</div>
-        <div class="mmr" style="display:none;">2000</div>
+        {#if signInVisible}
+            <NavItem to="/login" label="Sign in"/>
+        {:else}
+            <div class="user">{user}</div>
+            <div class="mmr">{mmr} MMR</div>
+        {/if}
     </div>
 </div>
 

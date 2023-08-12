@@ -5,6 +5,6 @@
     export let to = '#';
 </script>
 
-<Link to={to} class="nav-item">
+<Link to={to} class="nav-item" >
     {label}
 </Link>

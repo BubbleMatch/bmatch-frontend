@@ -1,7 +1,7 @@
 <script>
     export let id;
     export let nickname = 'nickname';
-    export let mmr = '1000pts';
+    export let mmr = '1000';
     export let isActive = false;
 </script>
 
@@ -15,7 +15,7 @@
         </div>
         <div class="right">
             <div class="nickname">{nickname}</div>
-            <div class="mmr">{mmr}</div>
+            <div class="mmr">{mmr} MMR</div>
         </div>
     </div>
 </div>
