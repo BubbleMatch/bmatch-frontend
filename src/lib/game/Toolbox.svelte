@@ -31,7 +31,6 @@
 
         const path = window.location.pathname;
         const segments = path.split('/');
-
         roomId = segments[segments.length - 1];
 
         subscribeToRoom(roomId, (message) => {

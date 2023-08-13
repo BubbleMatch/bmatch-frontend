@@ -7,7 +7,7 @@ export async function getProfile(token) {
         }
     });
 
-    if (response.status === 500) {
+    if (response.status === 500 || response.status === 401) {
         return null;
     }
 

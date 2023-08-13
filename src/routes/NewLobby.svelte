@@ -4,9 +4,12 @@
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
     import {onMount} from "svelte";
+    import {connect, sendMessage, subscribeToRoom} from "../lib/webSocket/lobbySocket.js"
 
     let players = [];
     let playerId = 1;
+    let lobbyId = '';
+
 
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href)
@@ -24,7 +27,21 @@
             let profile = await getProfile(getCookie('token'));
             mmr = profile.mmr;
             username = profile.username;
-            players = [...players, {id: playerId, name: profile.username, mmr: profile.mmr, type: "You"}];
+
+            const path = window.location.href;
+            const segments = path.split('/');
+            lobbyId = segments[segments.length - 1];
+
+            connect(username, lobbyId);
+
+            subscribeToRoom(lobbyId, (player) => {
+                console.log(player)
+                players = player.playerList;
+            });
+
+            let currentPlayer = {id: playerId, username: `${username}`, mmr: mmr, type: "player"};
+
+            sendMessage(lobbyId, currentPlayer);
         }
     });
 
@@ -47,7 +64,7 @@
                     <div class="left">
                         <img src="{guestSvg}" alt="">
                         <div class="user-info">
-                            <p>{player.name}</p>
+                            <p>{player.username}</p>
                             <p>{player.mmr} MMR</p>
                         </div>
                     </div>

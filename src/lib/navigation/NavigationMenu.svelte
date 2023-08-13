@@ -5,7 +5,7 @@
     import {onMount} from "svelte";
     import {generateRange} from "../utils/mmr.js";
 
-    let signInVisible = false;
+    let signInVisible = true;
     let user = "GUEST";
     let mmr = 0;
 

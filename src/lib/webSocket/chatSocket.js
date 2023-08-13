@@ -15,7 +15,7 @@ stompClient.onConnect = () => {
 stompClient.activate();
 
 function subscribeToRoom(roomId, callback) {
-    stompClient.subscribe(`/topic/${roomId}`, (message) => {
+    stompClient.subscribe(`/gamechat/${roomId}`, (message) => {
         callback(JSON.parse(message.body));
     });
 }
