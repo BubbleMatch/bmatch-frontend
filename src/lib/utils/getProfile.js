@@ -6,8 +6,10 @@ export async function getProfile(token) {
             'Authorization': `Bearer ${token}`
         }
     });
-    if(response.status === 500){
+
+    if (response.status === 500) {
         return null;
     }
+
     return response.json();
 }

@@ -1,33 +1,85 @@
 <script>
-    import * as wsModule from '../webSocket/wsModule.js';
+    import {onMount} from 'svelte';
+    import {getProfile} from "../utils/getProfile.js";
+    import {sendMessage, subscribeToRoom} from "../webSocket/chatSocket.js"
+    import {getCookie} from "../utils/cookies.js";
 
     export let chatVisible;
     export let toggleChat;
 
     let minutes = 0;
     let seconds = 0;
+    let messageContent = '';
+    let roomId = '';
+    let messages = [];
+    let currentUser = '';
+    let chatContainer;
 
-    let messageContent = '';  // To hold the content of your custom textarea
-
-
-    import {onMount} from 'svelte';
-
-    onMount(() => {
-        wsModule.connect();
-    });
-
-    function sendText(message) {
-        wsModule.send(message);
+    function handleMouseClick(event) {
+        if (event.altKey && event.button === 0) {
+            const timeLeft = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            messages = [...messages, {username: "SELF-MESSAGE", content: timeLeft}];
+        }
     }
 
+    onMount(async () => {
+        const profile = await getProfile(getCookie("token"));
+        currentUser = profile.username;
+        if (currentUser === undefined) {
+            currentUser = "GUEST";
+        }
+
+        const path = window.location.pathname;
+        const segments = path.split('/');
+
+        roomId = segments[segments.length - 1];
+
+        subscribeToRoom(roomId, (message) => {
+            if (messages.length > 100) {
+                messages = [];
+            }
+            messages = [...messages, message];
+            scrollToBottom();
+
+        });
+
+        document.addEventListener('mousedown', handleMouseClick);
+
+        return () => {
+            document.removeEventListener('mousedown', handleMouseClick);
+        };
+
+    });
+
+    $: if (messages.length) {
+        scrollToBottom();
+    }
+
+    function scrollToBottom() {
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    }
+
+    let canSend = true;
 
     function handleKeyDown(event) {
         if (event.key === 'Enter' || event.keyCode === 13) {
             event.preventDefault();
             messageContent = event.target.value;
 
-            sendText(messageContent);
-            event.target.innerText = '';  // Clear the content after sending
+            if (messageContent.length < 1 || !canSend) {
+                return;
+            }
+
+            sendMessage(roomId, currentUser, messageContent);
+            event.target.value = '';
+
+            canSend = false;
+
+            setTimeout(() => {
+                canSend = true;
+            }, 1000);
         }
     }
 
@@ -47,8 +99,12 @@
     </div>
 </div>
 <div class="chat" style="display: {chatVisible ? 'flex' : 'none'};">
-    <div class="textarea">
-
+    <div class="textarea" bind:this={chatContainer}>
+        {#each messages as message}
+            <div class="msg">
+                {message.username}: {message.content}
+            </div>
+        {/each}
     </div>
     <div class="input">
         <input

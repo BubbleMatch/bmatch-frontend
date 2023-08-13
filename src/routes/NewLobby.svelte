@@ -7,6 +7,7 @@
 
     let players = [];
     let playerId = 1;
+
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href)
             .then(() => {
@@ -23,14 +24,14 @@
             let profile = await getProfile(getCookie('token'));
             mmr = profile.mmr;
             username = profile.username;
-            players = [...players, { id: playerId, name: profile.username, mmr: profile.mmr, type: "You" }];
+            players = [...players, {id: playerId, name: profile.username, mmr: profile.mmr, type: "You"}];
         }
     });
 
     function addBot() {
-        if(players.length < 4){
+        if (players.length < 4) {
             playerId++;
-            players = [...players, { id: playerId, name: `Bot ${playerId}`, mmr: 2000, type: "Bot" }];
+            players = [...players, {id: playerId, name: `Bot ${playerId}`, mmr: 2000, type: "Bot"}];
         }
     }
 </script>
