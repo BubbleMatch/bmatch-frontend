@@ -1,5 +1,5 @@
 <svelte:head>
-    <title>Game {room}</title>
+    <title>Bubble Match: Game #{room}</title>
 </svelte:head>
 
 <script>

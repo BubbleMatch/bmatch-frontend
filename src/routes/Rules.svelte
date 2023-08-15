@@ -2,6 +2,11 @@
     import NavigationMenu from "../lib/navigation/NavigationMenu.svelte";
 </script>
 
+<svelte:head>
+    <title>Bubble Match: Code of Conduct</title>
+</svelte:head>
+
+
 <NavigationMenu></NavigationMenu>
 <div class="wrapper rules">
 

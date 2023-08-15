@@ -4,7 +4,7 @@ import GameWrapper from "../lib/game/GameWrapper.svelte";
 </script>
 
 <svelte:head>
-    <title>FAQ</title>
+    <title>Bubble Match: FAQ</title>
 </svelte:head>
 
 

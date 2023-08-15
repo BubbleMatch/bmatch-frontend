@@ -18,6 +18,10 @@
     }
 </script>
 
+<svelte:head>
+    <title>Bubble Match</title>
+</svelte:head>
+
 <main style="background-image: url({bg});">
     <div class="start-game" on:click={checkCookieAndRedirect}>start game
     </div>
