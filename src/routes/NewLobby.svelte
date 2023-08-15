@@ -3,8 +3,8 @@
     import guestSvg from "../assets/guest.svg";
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
-    import {onMount, onDestroy} from "svelte";
-    import {io} from 'socket.io-client';
+    import {onMount} from "svelte";
+    import {initializeLobbySocket, joinLobby} from '../lib/webSocket/lobbySocket.js';
 
     let socket;
 
@@ -17,34 +17,10 @@
             .then(() => {
                 console.log('URL copied to clipboard');
             });
-
     }
-
 
     let mmr = 2000;
     let username = "Guest";
-
-    function joinLobby() {
-        const data = {
-            id: socket.id,
-            username: username,
-            mmr: mmr,
-            type: "Player",
-            lobbyID: lobbyId
-        };
-
-        socket.emit('join', data);
-    }
-
-    function leaveLobby() {
-        const data = {
-            id: socket.id,
-            username: username,
-            lobbyID: lobbyId
-        };
-        //socket.emit('leave', data);
-    }
-
 
     onMount(async () => {
         if (getCookie('token') !== null) {
@@ -56,34 +32,45 @@
             const segments = path.split('/');
             lobbyId = segments[segments.length - 1];
 
-            socket = io.connect('ws://localhost:8004/');
+            socket = initializeLobbySocket({
+                onPlayerListUpdated: ({currentLobbyPlayers}) => {
 
-            socket.on('playerList', playerList => {
-                let currentLobbyPlayers = JSON.parse(playerList.Players);
-                console.log(currentLobbyPlayers);
-                players = [];
+                    console.log(currentLobbyPlayers);
 
-                for (let i = 0; i < currentLobbyPlayers.length; i++) {
-                    players = [...players, {
-                        id: playerId,
-                        username: currentLobbyPlayers[i].username,
-                        mmr: currentLobbyPlayers[i].mmr,
-                        type: currentLobbyPlayers[i].type
-                    }];
+                    players = [];
+
+                    for (let i = 0; i < currentLobbyPlayers.length; i++) {
+                        players = [...players, {
+                            id: playerId,
+                            username: currentLobbyPlayers[i].username,
+                            mmr: currentLobbyPlayers[i].mmr,
+                            type: currentLobbyPlayers[i].type
+                        }];
+                    }
+                },
+                onDisconnected: () => {
+                    const data = {
+                        id: socket.id,
+                        username: username,
+                        lobbyID: lobbyId
+                    };
+
+                    socket.emit('leave', data);
+                    console.log("leave");
                 }
-
             });
 
-            joinLobby();
-
-            socket.on('disconnect', () => {
-                leaveLobby();
+            joinLobby(socket, {
+                id: socket.id,
+                username: username,
+                mmr: mmr,
+                type: "Player",
+                lobbyID: lobbyId
             });
 
             return () => {
                 socket.disconnect();
             };
-
         }
     });
 
@@ -92,7 +79,13 @@
         if (players.length < 4) {
             playerId++;
 
-            players = [...players, {id: playerId, username: `Bot ${playerId}`, mmr: 2000, type: "Bot"}];
+            joinLobby(socket, {
+                    id: playerId,
+                    username: `Bot ${playerId}`,
+                    mmr: 2000, type: "Bot",
+                    lobbyID: lobbyId
+                }
+            );
         }
     }
 </script>
