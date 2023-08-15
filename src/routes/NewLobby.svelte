@@ -3,24 +3,48 @@
     import guestSvg from "../assets/guest.svg";
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
-    import {onMount} from "svelte";
-    import {connect, sendMessage, subscribeToRoom} from "../lib/webSocket/lobbySocket.js"
+    import {onMount, onDestroy} from "svelte";
+    import {io} from 'socket.io-client';
+
+    let socket;
 
     let players = [];
     let playerId = 1;
     let lobbyId = '';
-
 
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href)
             .then(() => {
                 console.log('URL copied to clipboard');
             });
+
     }
 
 
     let mmr = 2000;
     let username = "Guest";
+
+    function joinLobby() {
+        const data = {
+            id: socket.id,
+            username: username,
+            mmr: mmr,
+            type: "Player",
+            lobbyID: lobbyId
+        };
+
+        socket.emit('join', data);
+    }
+
+    function leaveLobby() {
+        const data = {
+            id: socket.id,
+            username: username,
+            lobbyID: lobbyId
+        };
+        //socket.emit('leave', data);
+    }
+
 
     onMount(async () => {
         if (getCookie('token') !== null) {
@@ -32,23 +56,43 @@
             const segments = path.split('/');
             lobbyId = segments[segments.length - 1];
 
-            connect(username, lobbyId);
+            socket = io.connect('ws://localhost:8004/');
 
-            subscribeToRoom(lobbyId, (player) => {
-                console.log(player)
-                players = player.playerList;
+            socket.on('playerList', playerList => {
+                let currentLobbyPlayers = JSON.parse(playerList.Players);
+                console.log(currentLobbyPlayers);
+                players = [];
+
+                for (let i = 0; i < currentLobbyPlayers.length; i++) {
+                    players = [...players, {
+                        id: playerId,
+                        username: currentLobbyPlayers[i].username,
+                        mmr: currentLobbyPlayers[i].mmr,
+                        type: currentLobbyPlayers[i].type
+                    }];
+                }
+
             });
 
-            let currentPlayer = {id: playerId, username: `${username}`, mmr: mmr, type: "player"};
+            joinLobby();
 
-            sendMessage(lobbyId, currentPlayer);
+            socket.on('disconnect', () => {
+                leaveLobby();
+            });
+
+            return () => {
+                socket.disconnect();
+            };
+
         }
     });
+
 
     function addBot() {
         if (players.length < 4) {
             playerId++;
-            players = [...players, {id: playerId, name: `Bot ${playerId}`, mmr: 2000, type: "Bot"}];
+
+            players = [...players, {id: playerId, username: `Bot ${playerId}`, mmr: 2000, type: "Bot"}];
         }
     }
 </script>

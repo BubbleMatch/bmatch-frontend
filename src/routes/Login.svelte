@@ -55,10 +55,10 @@
         BUBBLE MATCH
     </div>
     <div class="edits-wrapper">
-        <div class="nav">
-            <input bind:value={email} placeholder="Gmail" type="text">
-            <input bind:value={password} placeholder="Password" type="password">
-            <div class="button" on:click={login}>Sign in</div>
+        <form class="nav" on:submit|preventDefault={login}>
+            <input name="email" bind:value={email} placeholder="Gmail" type="email">
+            <input name="password" bind:value={password} placeholder="Password" type="password">
+            <button type="submit" class="button">Sign in</button>
             <div class="info">
                 <div class="grey">Still not have an account?</div>
                 <div
@@ -72,7 +72,8 @@
             </div>
             <div class="privacy">
             </div>
-        </div>
+        </form>
+
     </div>
 </div>
 

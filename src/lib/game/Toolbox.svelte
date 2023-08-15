@@ -1,7 +1,6 @@
 <script>
     import {onMount} from 'svelte';
     import {getProfile} from "../utils/getProfile.js";
-    import {sendMessage, subscribeToRoom} from "../webSocket/chatSocket.js"
     import {getCookie} from "../utils/cookies.js";
 
     export let chatVisible;
@@ -33,14 +32,6 @@
         const segments = path.split('/');
         roomId = segments[segments.length - 1];
 
-        subscribeToRoom(roomId, (message) => {
-            if (messages.length > 100) {
-                messages = [];
-            }
-            messages = [...messages, message];
-            scrollToBottom();
-
-        });
 
         document.addEventListener('mousedown', handleMouseClick);
 
@@ -71,7 +62,6 @@
                 return;
             }
 
-            sendMessage(roomId, currentUser, messageContent);
             event.target.value = '';
 
             canSend = false;

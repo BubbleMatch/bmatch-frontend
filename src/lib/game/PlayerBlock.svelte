@@ -19,7 +19,3 @@
         </div>
     </div>
 </div>
-
-<style>
-    /* Styles related to the player block go here */
-</style>
