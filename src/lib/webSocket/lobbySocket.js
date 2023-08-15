@@ -1,7 +1,7 @@
 import {io} from 'socket.io-client';
 
 export function initializeLobbySocket({
-                                          onPlayerListUpdated, onDisconnected
+                                          onPlayerListUpdated, onDisconnected, onLobbyRemoved,userExist
                                       }) {
     const socket = io.connect('ws://localhost:8004/');
 
@@ -10,8 +10,16 @@ export function initializeLobbySocket({
         onPlayerListUpdated({currentLobbyPlayers: currentLobbyPlayers});
     });
 
-    socket.on('disconnect', () => {
-        onDisconnected();
+    socket.on('lobbyRemoved', () => {
+        onLobbyRemoved();
+    })
+
+    socket.on('lobbyRemoved', () => {
+        onLobbyRemoved();
+    })
+
+    socket.on('userExist', () => {
+        userExist();
     });
 
     return socket;

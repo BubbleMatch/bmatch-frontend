@@ -11,6 +11,8 @@
     let players = [];
     let playerId = 1;
     let lobbyId = '';
+    let isLobbyRemoved = false;
+    let addBotVisible = true;
 
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href)
@@ -46,6 +48,7 @@
                             mmr: currentLobbyPlayers[i].mmr,
                             type: currentLobbyPlayers[i].type
                         }];
+                        if (players.length === 4) addBotVisible = false;
                     }
                 },
                 onDisconnected: () => {
@@ -57,6 +60,19 @@
 
                     socket.emit('leave', data);
                     console.log("leave");
+                },
+                onLobbyRemoved: () => {
+                    socket.disconnect();
+                    players = [];
+                    lobbyId = "Removed";
+                    isLobbyRemoved = true;
+                },
+
+                userExist: () => {
+                    socket.disconnect();
+                    players = [];
+                    lobbyId = " Connected from another tab or device";
+                    isLobbyRemoved = true;
                 }
             });
 
@@ -67,6 +83,7 @@
                 type: "Player",
                 lobbyID: lobbyId
             });
+
 
             return () => {
                 socket.disconnect();
@@ -94,7 +111,7 @@
 <div class="wrapper new-lobby">
 
     <div class="lobby-wrapper">
-        <div class="header"><p>Lobby</p></div>
+        <div class="header"><p>Lobby: {lobbyId}</p></div>
         <div class="user-block">
             {#each players as player}
                 <div class="user">
@@ -113,13 +130,17 @@
         </div>
     </div>
 
-    <div class="lobby-toolbox">
+    <div class="lobby-toolbox" style="display: {isLobbyRemoved ? 'none' : 'flex'}">
         <div class="button" on:click={copyToClipboard}>
             <p>Copy link</p>
         </div>
 
-        <div class="button" on:click={addBot}>
+        <div class="button" on:click={addBot} style="display: {addBotVisible ? 'flex' : 'none'};">
             <p>Add bot</p>
+        </div>
+
+        <div class="button" on:click={addBot} style="display: {addBotVisible ? 'none' : 'flex'};">
+            <p>Start game</p>
         </div>
 
     </div>
