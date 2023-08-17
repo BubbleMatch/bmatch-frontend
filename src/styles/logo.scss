@@ -11,6 +11,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    font-size: 24px;
 
     *:not(:first-child) {
       margin-right: 34px;
@@ -33,6 +34,47 @@
     *:not(:first-child) {
       margin-left: 34px;
     }
+
+    .nickname-block {
+      display: flex;
+      flex-direction: row;
+      align-self: center;
+
+      .info {
+        display: flex;
+        flex-direction: column;
+        align-items: self-end;
+
+        .user {
+          color: #FAFAFA;
+          text-align: right;
+          font-family: Rubik;
+          font-size: 2rem;
+          font-style: normal;
+          font-weight: 700;
+          line-height: normal;
+        }
+
+        .mmr {
+          color: #FAFAFA;
+          text-align: right;
+          font-family: Rubik;
+          font-size: 16px;
+          font-style: normal;
+          font-weight: 500;
+          line-height: normal;
+        }
+      }
+
+      .img {
+        width: 48px;
+        height: 48px;
+        background-size: cover;
+        border-radius: 50%;
+        align-self: center;
+      }
+    }
+
   }
 
   a {

@@ -4,10 +4,12 @@
     import {getProfile} from "../utils/getProfile.js";
     import {onMount} from "svelte";
     import {generateRange} from "../utils/mmr.js";
+    import guestSvg from "../../assets/guest.svg";
 
     let signInVisible = true;
     let user = "GUEST";
     let mmr = 0;
+    let profileImg = guestSvg;
 
     let lobbylink = "/singin";
 
@@ -50,8 +52,16 @@
         {#if signInVisible}
             <NavItem to="/login" label="Sign in"/>
         {:else}
-            <div class="user">{user}</div>
-            <div class="mmr">{mmr} MMR</div>
+            <div class="nickname-block">
+                <div class="info">
+                    <div class="user">{user}</div>
+                    <div class="mmr">{mmr} MMR</div>
+                </div>
+                <div class="img" style='background-image: url("{profileImg}")'>
+
+                </div>
+            </div>
+
         {/if}
     </div>
 </div>
