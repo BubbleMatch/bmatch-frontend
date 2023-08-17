@@ -4,15 +4,18 @@
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
     import {onMount} from "svelte";
-    import {initializeLobbySocket, joinLobby} from '../lib/webSocket/lobbySocket.js';
+    import {initializeLobbySocket, joinLobby, generateGame} from '../lib/webSocket/lobbySocket.js';
 
     let socket;
 
     let players = [];
     let playerId = 1;
-    let lobbyId = '';
+    let lobbyID = '';
     let isLobbyRemoved = false;
     let addBotVisible = true;
+    let startGameVisible = false;
+
+    let readyVisible = false;
 
     function copyToClipboard() {
         navigator.clipboard.writeText(window.location.href)
@@ -32,13 +35,11 @@
 
             const path = window.location.href;
             const segments = path.split('/');
-            lobbyId = segments[segments.length - 1];
+            lobbyID = segments[segments.length - 1];
 
             socket = initializeLobbySocket({
                 onPlayerListUpdated: ({currentLobbyPlayers}) => {
-
-                    console.log(currentLobbyPlayers);
-
+                    
                     players = [];
 
                     for (let i = 0; i < currentLobbyPlayers.length; i++) {
@@ -48,14 +49,24 @@
                             mmr: currentLobbyPlayers[i].mmr,
                             type: currentLobbyPlayers[i].type
                         }];
-                        if (players.length === 4) addBotVisible = false;
+                        if (players.length === 4) {
+                            addBotVisible = false;
+                            startGameVisible = true;
+                            readyVisible = false;
+                        } else {
+                            addBotVisible = true;
+                            readyVisible = false;
+                        }
                     }
+                },
+                systemMessage: (data) => {
+                    alert(data.message)
                 },
                 onDisconnected: () => {
                     const data = {
                         id: socket.id,
                         username: username,
-                        lobbyID: lobbyId
+                        lobbyID: lobbyID
                     };
 
                     socket.emit('leave', data);
@@ -64,15 +75,21 @@
                 onLobbyRemoved: () => {
                     socket.disconnect();
                     players = [];
-                    lobbyId = "Removed";
+                    lobbyID = "Removed";
                     isLobbyRemoved = true;
+                    readyVisible = false;
+                    addBotVisible = false;
                 },
 
                 userExist: () => {
                     socket.disconnect();
                     players = [];
-                    lobbyId = " Connected from another tab or device";
+                    lobbyID = " Connected from another tab or device";
                     isLobbyRemoved = true;
+                },
+                gameRedirect: () => {
+                    console.log('gameRedirect');
+                    readyVisible = true;
                 }
             });
 
@@ -81,7 +98,7 @@
                 username: username,
                 mmr: mmr,
                 type: "Player",
-                lobbyID: lobbyId
+                lobbyID: lobbyID
             });
 
 
@@ -100,7 +117,17 @@
                     id: playerId,
                     username: `Bot ${playerId}`,
                     mmr: 2000, type: "Bot",
-                    lobbyID: lobbyId
+                    lobbyID: lobbyID
+                }
+            );
+        }
+    }
+
+    function startGame() {
+        if (players.length === 4) {
+            generateGame(socket, {
+                    JWT: getCookie('token'),
+                    lobbyID: lobbyID
                 }
             );
         }
@@ -112,12 +139,11 @@
 </svelte:head>
 
 
-
 <NavigationMenu></NavigationMenu>
 <div class="wrapper new-lobby">
 
     <div class="lobby-wrapper">
-        <div class="header"><p>Lobby: {lobbyId}</p></div>
+        <div class="header"><p>Lobby: {lobbyID}</p></div>
         <div class="user-block">
             {#each players as player}
                 <div class="user">
@@ -145,13 +171,16 @@
             <p>Add bot</p>
         </div>
 
-        <div class="button" on:click={addBot} style="display: {addBotVisible ? 'none' : 'flex'};">
+        <div class="button" on:click={startGame} style="display: {startGameVisible ? 'flex' : 'none'};">
             <p>Start game</p>
         </div>
 
     </div>
 </div>
-
+<div class="ready" style="display: {readyVisible ? 'flex' : 'none'};">
+    READY
+</div>
 <style>
+
     @import "../styles/new-lobby.scss";
 </style>
