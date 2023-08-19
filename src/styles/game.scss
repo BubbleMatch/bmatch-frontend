@@ -180,11 +180,14 @@
 .id.active:before {
   position: relative;
   display: flex;
-  align-self: center;
-  content: '→';
+  content: '';
+  background-image: url("/polygon.svg");
+  background-repeat: no-repeat;
+  background-position: right;
+  width: 26px;
+  height: 20px;
   z-index: 2;
   right: 50px;
-  font-size: 2rem;
   color: rgba(255, 255, 255, 1);
 }
 

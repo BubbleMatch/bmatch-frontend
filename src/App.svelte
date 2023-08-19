@@ -8,6 +8,7 @@
     import FAQ from "./routes/Faq.svelte";
     import Rules from "./routes/Rules.svelte";
     import NewLobby from "./routes/NewLobby.svelte";
+    import Profile from "./routes/Profile.svelte";
 </script>
 
 <Router>
@@ -19,4 +20,5 @@
     <Route path="/signup" component={Signup}/>
     <Route path="/health" component={Health}/>
     <Route path="/create-lobby/:room" component={NewLobby}/>
+    <Route path="/profile/:user_id" component={Profile}/>
 </Router>

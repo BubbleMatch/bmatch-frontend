@@ -1,10 +1,11 @@
 <script>
     import NavigationMenu from "../lib/navigation/NavigationMenu.svelte";
-    import guestSvg from "../assets/guest.svg";
+    import guestSvg from "./../assets/guest.svg";
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
     import {onMount} from "svelte";
-    import {initializeLobbySocket, joinLobby, generateGame} from '../lib/webSocket/lobbySocket.js';
+    import {initializeLobbySocket, joinLobby, generateGame, verifyWSLobby} from '../lib/webSocket/lobbySocket.js';
+    import {copyToClipboard} from "./../lib/utils/uiHelpers.js";
 
     let socket;
 
@@ -16,13 +17,6 @@
     let startGameVisible = false;
 
     let readyVisible = false;
-
-    function copyToClipboard() {
-        navigator.clipboard.writeText(window.location.href)
-            .then(() => {
-                console.log('URL copied to clipboard');
-            });
-    }
 
     let mmr = 2000;
     let username = "Guest";
@@ -39,7 +33,7 @@
 
             socket = initializeLobbySocket({
                 onPlayerListUpdated: ({currentLobbyPlayers}) => {
-                    
+
                     players = [];
 
                     for (let i = 0; i < currentLobbyPlayers.length; i++) {
@@ -47,7 +41,8 @@
                             id: playerId,
                             username: currentLobbyPlayers[i].username,
                             mmr: currentLobbyPlayers[i].mmr,
-                            type: currentLobbyPlayers[i].type
+                            type: currentLobbyPlayers[i].type,
+                            ready: currentLobbyPlayers[i].ready
                         }];
                         if (players.length === 4) {
                             addBotVisible = false;
@@ -88,8 +83,11 @@
                     isLobbyRemoved = true;
                 },
                 gameRedirect: () => {
-                    console.log('gameRedirect');
                     readyVisible = true;
+                },
+
+                acceptGameRequest: (data) => {
+                    console.log(data);
                 }
             });
 
@@ -100,7 +98,6 @@
                 type: "Player",
                 lobbyID: lobbyID
             });
-
 
             return () => {
                 socket.disconnect();
@@ -123,13 +120,23 @@
         }
     }
 
-    function startGame() {
+    function requestGame() {
         if (players.length === 4) {
             generateGame(socket, {
                     JWT: getCookie('token'),
                     lobbyID: lobbyID
                 }
             );
+        }
+    }
+
+    function verifyLobby() {
+        if (players.length === 4) {
+            verifyWSLobby(socket, {
+                    JWT: getCookie('token')
+                }
+            );
+            readyVisible = false;
         }
     }
 </script>
@@ -150,8 +157,9 @@
                     <div class="left">
                         <img src="{guestSvg}" alt="">
                         <div class="user-info">
-                            <p>{player.username}</p>
+                            <p style="color: {player.ready || player.type ==='Bot' ? 'green' : ''}">{player.username}</p>
                             <p>{player.mmr} MMR</p>
+                            <p>ready {player.ready}</p>
                         </div>
                     </div>
                     <div class="right">
@@ -171,13 +179,13 @@
             <p>Add bot</p>
         </div>
 
-        <div class="button" on:click={startGame} style="display: {startGameVisible ? 'flex' : 'none'};">
+        <div class="button" on:click={requestGame} style="display: {startGameVisible ? 'flex' : 'none'};">
             <p>Start game</p>
         </div>
 
     </div>
 </div>
-<div class="ready" style="display: {readyVisible ? 'flex' : 'none'};">
+<div class="ready" on:click={verifyLobby} style="display: {readyVisible ? 'flex' : 'none'};">
     READY
 </div>
 <style>
