@@ -12,7 +12,7 @@ export async function getProfile(token) {
             alert("Server error" + await response.json().message);
             return null;
         case 401:
-            window.location.href = '/login  ';
+            window.location.href = '/login';
             return null;
         case 200:
             return response.json();

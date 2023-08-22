@@ -159,7 +159,6 @@
                         <div class="user-info">
                             <p style="color: {player.ready || player.type ==='Bot' ? 'green' : ''}">{player.username}</p>
                             <p>{player.mmr} MMR</p>
-                            <p>ready {player.ready}</p>
                         </div>
                     </div>
                     <div class="right">
