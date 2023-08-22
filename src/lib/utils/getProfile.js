@@ -1,5 +1,8 @@
+
 export async function getProfile(token) {
-    const response = await fetch('http://localhost:8002/api/user/profile', {
+    let apiUrl = import.meta.env.VITE_API_URL;
+
+    const response = await fetch(`${apiUrl}/api/user/profile`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',

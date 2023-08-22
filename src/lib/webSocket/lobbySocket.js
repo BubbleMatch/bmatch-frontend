@@ -9,7 +9,9 @@ export function initializeLobbySocket({
                                           gameRedirect,
                                           acceptGameRequest
                                       }) {
-    const socket = io.connect('ws://localhost:8004/');
+
+    let wsUrl = import.meta.env.VITE_WS_URL;
+    const socket = io.connect(`ws://${wsUrl}/`);
 
     socket.on('playerList', playerList => {
         let currentLobbyPlayers = JSON.parse(playerList.Players);
