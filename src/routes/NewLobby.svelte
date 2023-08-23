@@ -93,9 +93,7 @@
 
             joinLobby(socket, {
                 id: socket.id,
-                username: username,
-                mmr: mmr,
-                type: "Player",
+                token: getCookie('token'),
                 lobbyID: lobbyID
             });
 
@@ -108,12 +106,8 @@
 
     function addBot() {
         if (players.length < 4) {
-            playerId++;
-
             joinLobby(socket, {
-                    id: playerId,
-                    username: `Bot ${playerId}`,
-                    mmr: 2000, type: "Bot",
+                    type: "Bot",
                     lobbyID: lobbyID
                 }
             );

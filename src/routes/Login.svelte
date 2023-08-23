@@ -1,7 +1,7 @@
 <script>
 
     import {setCookie} from "../lib/utils/cookies.js";
-    import {getProfile} from "../lib/utils/getProfile.js";
+    import {apiLogin, getProfile} from "../lib/utils/getProfile.js";
     import {generateRange} from "../lib/utils/mmr.js";
     import {navigate} from "svelte-routing";
 
@@ -12,35 +12,19 @@
         window.location.href = '/signup';
     }
 
-    function getRandomInt(max) {
-        return Math.floor(Math.random() * max);
-    }
-
     async function login() {
-        const response = await fetch('http://localhost:8002/api/user/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email,
-                password,
-            }),
-        });
+        if (email.length < 6 || password.length < 6) return;
 
-        const data = await response.json();
+        let data = await apiLogin(email, password);
 
-        if(response.status !== 200){
-            alert(data.message);
+        if (data.message) {
+            setCookie('token', data.message)
 
-            return;
+            let profile = await getProfile(data.message);
+            let roomNumber = `${profile.username}#${generateRange(profile.mmr)}`
+            navigate(`/create-lobby/${roomNumber}`);
         }
 
-        setCookie('token', data.message)
-
-        let profile = await getProfile(data.message);
-        let roomNumber = `${profile.username}#${generateRange(profile.mmr)}`
-        navigate(`/create-lobby/${roomNumber}`);
     }
 
     function handleKeydown(event) {
