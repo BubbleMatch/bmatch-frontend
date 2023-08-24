@@ -7,7 +7,7 @@ export function initializeLobbySocket({
                                           onLobbyRemoved,
                                           userExist,
                                           gameRedirect,
-                                          acceptGameRequest
+                                          gameUUID
                                       }) {
 
     let wsUrl = import.meta.env.VITE_WS_URL;
@@ -34,9 +34,9 @@ export function initializeLobbySocket({
         systemMessage(JSON.parse(data));
     });
 
-    socket.on('acceptGameRequest', data => {
-        acceptGameRequest();
-    })
+    socket.on('gameUUID', data => {
+        gameUUID(data.uuid);
+    });
 
     return socket;
 }
@@ -47,8 +47,4 @@ export function joinLobby(socket, data) {
 
 export function generateGame(socket, data) {
     socket.emit('generateGame', data);
-}
-
-export function verifyWSLobby(socket, data) {
-    socket.emit('verifyLobby', data);
 }
