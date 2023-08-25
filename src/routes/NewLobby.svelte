@@ -135,7 +135,6 @@
     <title>Lobby: #{username}</title>
 </svelte:head>
 
-
 <NavigationMenu></NavigationMenu>
 <div class="wrapper new-lobby">
 

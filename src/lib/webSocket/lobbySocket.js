@@ -10,7 +10,7 @@ export function initializeLobbySocket({
                                           gameUUID
                                       }) {
 
-    let wsUrl = import.meta.env.VITE_WS_URL;
+    let wsUrl = import.meta.env.VITE_WS_LOBBY_URL;
     const socket = io.connect(`wss://${wsUrl}/`);
 
     socket.on('playerList', playerList => {

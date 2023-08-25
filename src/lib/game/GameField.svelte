@@ -1,13 +1,28 @@
 <script>
     import sourceImgSrc from '../../assets/item.png';
 
-    let items = Array(100).fill(undefined, undefined, undefined).map((_, i) => ({id: `item${i}`, opened: false}));
+    export let openBubbles = [];
+    export let isYourTurn = false;
+
+    import { createEventDispatcher } from 'svelte';
+    const dispatch = createEventDispatcher();
+
+    let items = Array(100).fill(undefined).map((_, i) => ({
+        id: `item${i}`,
+        src: openBubbles.includes(i) ? `/bubbles/50shashek_${i}.png` : sourceImgSrc,
+        selected: false
+    }));
 
     function handleClick(item) {
-        item.opened = true;
-        items = items;
-    }
+        if (!isYourTurn) return;
 
+        if(item.src === sourceImgSrc) {
+            item.selected = !item.selected;
+            items = items.slice();
+
+            dispatch('bubbleClicked', item.id.replace('item', ''));
+        }
+    }
 
     function preventDefault(event) {
         event.preventDefault();
@@ -17,12 +32,11 @@
 <div class="game-container">
     {#each items as item}
         <img
-                src={sourceImgSrc}
-                class="item {item.opened ? 'opened' : ''}"
+                src={item.src}
+                class="item {item.selected ? 'selected' : ''}"
                 id={item.id}
                 alt="Game item"
                 on:click={() => handleClick(item)}
         />
     {/each}
 </div>
-
