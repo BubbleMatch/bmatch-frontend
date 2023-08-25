@@ -9,16 +9,28 @@
 
     let items = Array(100).fill(undefined).map((_, i) => ({
         id: `item${i}`,
-        src: openBubbles.includes(i) ? `/bubbles/50shashek_${i}.png` : sourceImgSrc,
+        src: sourceImgSrc,
         selected: false
     }));
+
+    $: if (openBubbles.length) {
+        items = items.map((item, i) => {
+            let foundBubble = openBubbles.find(bubble => bubble.id === `item${i}`);
+            return {
+                id: `item${i}`,
+                src: foundBubble ? foundBubble.src : sourceImgSrc,
+                selected: false
+            };
+        });
+    }
+
 
     function handleClick(item) {
         if (!isYourTurn) return;
 
         if(item.src === sourceImgSrc) {
-            item.selected = !item.selected;
-            items = items.slice();
+            //item.selected = !item.selected;
+            //items = items.slice();
 
             dispatch('bubbleClicked', item.id.replace('item', ''));
         }
@@ -33,6 +45,7 @@
     {#each items as item}
         <img
                 src={item.src}
+                draggable="false"
                 class="item {item.selected ? 'selected' : ''}"
                 id={item.id}
                 alt="Game item"

@@ -12,7 +12,8 @@ export function initializeGameSocket(
         timeRequested,
         isPaused,
         openBubble,
-        closeBubble
+        closeBubble,
+        getCurrentPlayer
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
@@ -42,13 +43,25 @@ export function initializeGameSocket(
         systemMessage();
     });
 
+    socket.on('gameAction', action => {
+        gameAction(action);
+    })
+
     socket.on('gameRedirect', data => {
         gameRedirect(data);
     });
 
+    socket.on('currentPlayer', data => {
+        getCurrentPlayer(data);
+    });
+
+    socket.on('openBubble', data => {
+        openBubble(data);
+    })
+
     return socket;
 }
 
-export function joinGame(socket, data){
+export function joinGame(socket, data) {
     socket.emit('join', data);
 }

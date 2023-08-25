@@ -13,17 +13,23 @@
     export let room;
 
     let openBubbles = [];
-    let isYourTurn = true;
+    let isYourTurn = false;
+
+    let username = '';
 
     function sendOpenedBubble(bubbleId) {
-        console.log(bubbleId);
-        if (socket && isYourTurn) {//
-            socket.emit('bubbleOpened', { id: bubbleId });
+        if (socket && isYourTurn) {
+            socket.emit('sendOpenedBubble', {bubbleId: bubbleId, token: getCookie('token'), gameUUID: room});
         }
     }
 
-
     onMount(async () => {
+
+        if (getCookie('token')) {
+            let profile = await getProfile(getCookie('token'));
+            username = profile.username;
+        }
+
         socket = initializeGameSocket({
             onPlayerListUpdated: (data) => {
                 players = data.map((player, index) => ({
@@ -45,7 +51,14 @@
 
             },
             gameAction: (data) => {
+                for (const action of data.openBubbles) {
+                    openBubbles.push({
+                        id: `item${parseInt(action.bubbleId)}`,
+                        src: `/bubbles/50shashek_${action.bubbleImg}.png`
+                    });
+                }
 
+                openBubbles = [...openBubbles];
             },
             timeRequested: (data) => {
 
@@ -54,10 +67,25 @@
 
             },
             openBubble: (data) => {
-
+                let newBubble = {
+                    id: `item${parseInt(data.bubbleId)}`,
+                    src: `/bubbles/50shashek_${data.bubbleImg}.png`
+                };
+                openBubbles.push(newBubble);
+                openBubbles = [...openBubbles];
+                console.log(openBubbles);
             },
             closeBubble: (data) => {
 
+            },
+            getCurrentPlayer: (data) => {
+                let currentPlayer = players.filter(value => {
+                    return value.username === data.username
+                })[0];
+
+                players[currentPlayer.id - 1].isActive = true;
+
+                isYourTurn = (username === currentPlayer.username);
             }
         });
 

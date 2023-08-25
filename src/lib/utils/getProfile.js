@@ -16,7 +16,8 @@ export async function getProfile(token) {
             alert("Server error" + await response.json().message);
             return null;
         case 401:
-            window.location.href = '/login';
+            if (!window.location.href.includes('/game/'))
+                window.location.href = '/login';
             return null;
         case 200:
             return response.json();
