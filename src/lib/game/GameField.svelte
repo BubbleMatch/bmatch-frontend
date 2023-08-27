@@ -19,18 +19,17 @@
             return {
                 id: `item${i}`,
                 src: foundBubble ? foundBubble.src : sourceImgSrc,
-                selected: false
+                selected: false,
+                highlighted: !!foundBubble
             };
         });
     }
+
 
     function handleClick(item) {
         if (!isYourTurn) return;
 
         if(item.src === sourceImgSrc) {
-            //item.selected = !item.selected;
-            //items = items.slice();
-
             dispatch('bubbleClicked', item.id.replace('item', ''));
         }
     }
@@ -45,7 +44,7 @@
         <img
                 src={item.src}
                 draggable="false"
-                class="item {item.selected ? 'selected' : ''}"
+                class="item {item.selected ? 'selected' : ''} {item.highlighted ? 'highlighted-icon' : ''}"
                 id={item.id}
                 alt="Game item"
                 on:click={() => handleClick(item)}

@@ -51,17 +51,20 @@
   -moz-user-select: none;
   -webkit-user-select: none;
   -ms-user-select: none;
-  transition: opacity 0.18s ease-in-out;
+  filter: brightness(1);
 
   &.selected {
     transform: translateY(-8px) scale(0.95);
     opacity: 0.5;
   }
 
+  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+
   &:hover {
     user-select: none;
-    opacity: 0.5;
     cursor: pointer;
+    filter: brightness(1.25);
+    transform: translateY(-8px);
   }
 }
 
@@ -248,4 +251,6 @@
   }
 }
 
-
+.highlighted-icon {
+  filter: brightness(1.25); // увеличивает яркость
+}

@@ -51,7 +51,16 @@
 
             },
             gameAction: (data) => {
-                //update timer
+                openBubbles = [];
+
+                data.openBubbles.forEach(newBubble =>{
+                    openBubbles.push({
+                        id: `item${parseInt(newBubble.bubbleId)}`,
+                        src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
+                    });
+                });
+
+                openBubbles = [...openBubbles];
             },
             timeRequested: (data) => {
 
@@ -64,23 +73,21 @@
                     id: `item${parseInt(data.bubbleId)}`,
                     src: `/bubbles/50shashek_${data.bubbleImg}.png`
                 };
+                console.log(`OpenBubble`);
                 openBubbles.push(newBubble);
+                console.log(newBubble);
+
                 openBubbles = [...openBubbles];
-                console.log(openBubbles);
             },
             closeBubbles: (data) => {
-
+                console.log(`closeBubbles`);
+                console.log(data);
                 openBubbles = openBubbles.filter(bubble =>
-                    bubble.id !== `item${parseInt(data.firstBubbleId)}`
-                );
-                openBubbles = openBubbles.filter(bubble =>
+                    bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
 
-                openBubbles = [...openBubbles];
-
-
-                console.log(openBubbles);
+                console.log(openBubbles)
             },
             getCurrentPlayer: (data) => {
                 let currentPlayer = players.filter(value => {
@@ -93,6 +100,9 @@
 
                 players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
+
+                console.log(`CurrentPlayer`);
+                console.log(data);
             }
         });
 
