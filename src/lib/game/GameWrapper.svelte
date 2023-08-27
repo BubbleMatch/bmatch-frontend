@@ -51,14 +51,7 @@
 
             },
             gameAction: (data) => {
-                for (const action of data.openBubbles) {
-                    openBubbles.push({
-                        id: `item${parseInt(action.bubbleId)}`,
-                        src: `/bubbles/50shashek_${action.bubbleImg}.png`
-                    });
-                }
-
-                openBubbles = [...openBubbles];
+                //update timer
             },
             timeRequested: (data) => {
 
@@ -75,16 +68,30 @@
                 openBubbles = [...openBubbles];
                 console.log(openBubbles);
             },
-            closeBubble: (data) => {
+            closeBubbles: (data) => {
 
+                openBubbles = openBubbles.filter(bubble =>
+                    bubble.id !== `item${parseInt(data.firstBubbleId)}`
+                );
+                openBubbles = openBubbles.filter(bubble =>
+                    bubble.id !== `item${parseInt(data.secondBubbleId)}`
+                );
+
+                openBubbles = [...openBubbles];
+
+
+                console.log(openBubbles);
             },
             getCurrentPlayer: (data) => {
                 let currentPlayer = players.filter(value => {
                     return value.username === data.username
                 })[0];
 
-                players[currentPlayer.id - 1].isActive = true;
+                for (let i = 0; i < players.length; i++) {
+                    players[i].isActive = false;
+                }
 
+                players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
             }
         });

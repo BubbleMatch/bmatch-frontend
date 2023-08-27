@@ -13,7 +13,7 @@
         selected: false
     }));
 
-    $: if (openBubbles.length) {
+    $: {
         items = items.map((item, i) => {
             let foundBubble = openBubbles.find(bubble => bubble.id === `item${i}`);
             return {
@@ -23,7 +23,6 @@
             };
         });
     }
-
 
     function handleClick(item) {
         if (!isYourTurn) return;

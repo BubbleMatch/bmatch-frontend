@@ -12,7 +12,7 @@ export function initializeGameSocket(
         timeRequested,
         isPaused,
         openBubble,
-        closeBubble,
+        closeBubbles,
         getCurrentPlayer
     }) {
 
@@ -57,6 +57,10 @@ export function initializeGameSocket(
 
     socket.on('openBubble', data => {
         openBubble(data);
+    });
+
+    socket.on('closeBubbles', data =>{
+        closeBubbles(data);
     })
 
     return socket;
