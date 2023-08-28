@@ -13,7 +13,7 @@
             let roomNumber = `${profile.username}#${generateRange(profile.mmr)}`
             navigate(`/create-lobby/${roomNumber}`);
         } else {
-            window.location.href = '/signup';
+            window.location.href = '/login';
         }
     }
 </script>
