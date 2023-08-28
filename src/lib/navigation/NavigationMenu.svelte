@@ -40,8 +40,7 @@
 <div class="navigationMenu">
     <div class="left">
         <div class="logo">
-            <span>Bubble</span>
-            <span>Match</span>
+
         </div>
         <NavItem to="/" label="Home"/>
         <NavItem to="/faq" label="How to play"/>

@@ -83,22 +83,11 @@
   }
 
   .logo {
-    display: flex;
-    flex-direction: column;
-    font-size: 30px;
-    font-weight: 700;
-    text-transform: uppercase;
-
-    span:first-child {
-      width: max-content;
-
-      &:before {
-        content: '';
-        background-color: white;
-        display: flex;
-        position: relative;
-        height: 5px;
-      }
-    }
+    background-image: url("/logo.png");
+    background-size: contain;
+    background-repeat: no-repeat;
+    min-width: 102px;
+    min-height: 48px;
+    margin-right: 36px;
   }
 }
