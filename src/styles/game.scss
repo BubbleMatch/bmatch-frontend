@@ -4,10 +4,9 @@
   // max-width: 1200px;
   user-select: none;
   padding: 5px;
-  background: rgb(66 72 77 / 100%);
-  border-radius: 0 0 10px 10px;
-  -webkit-box-shadow: 5px -5px 9px -1px rgba(107, 23, 24, 0.3);
-  box-shadow: 5px -5px 9px -1px rgba(107, 23, 24, 0.3);
+  background-size: contain;
+  background-repeat: no-repeat;
+  //  background-image: url("/bg_test.png");
 }
 
 .bg {
@@ -16,15 +15,7 @@
   flex-basis: 53%;
 
   &::after {
-    display: inherit;
-    position: relative;
-    content: '';
-    height: 7px;
-    bottom: 5px;
-    z-index: 2;
-    width: 100%;
-    background: #6b1718;
-    border-radius: 0 0 10px 10px;
+
   }
 }
 
@@ -44,7 +35,16 @@
   margin: 20px 5% 141px;
 }
 
+
+@keyframes sinusoidalHover {
+  0%, 100% { transform: translateY(var(--translateY)); }
+  25% { transform: translateY(calc(var(--translateY) - 8px)); }
+  50% { transform: translateY(var(--translateY)); }
+  75% { transform: translateY(calc(var(--translateY) - 8px)); }
+}
+
 .item {
+  position: relative;
   width: 10%;
   height: auto;
   user-select: none;
@@ -52,21 +52,17 @@
   -webkit-user-select: none;
   -ms-user-select: none;
   filter: brightness(1);
-
-  &.selected {
-    transform: translateY(-8px) scale(0.95);
-    opacity: 0.5;
-  }
-
-  transition: transform 0.3s ease-in-out, filter 0.3s ease-in-out;
+  transform: translateY(var(--translateY));
 
   &:hover {
-    user-select: none;
     cursor: pointer;
-    filter: brightness(1.25);
-    transform: translateY(-8px);
+    background-image: url("/stroke.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    animation: sinusoidalHover 2s infinite;
   }
 }
+
 
 .toolbox {
   min-width: 320px;
@@ -251,6 +247,10 @@
   }
 }
 
+.item.lifted {
+  transform: translateY(-15px);
+}
+
 .highlighted-icon {
-  filter: brightness(1.25); // увеличивает яркость
+  filter: brightness(1.25);
 }

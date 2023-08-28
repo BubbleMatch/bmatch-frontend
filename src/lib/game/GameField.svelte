@@ -40,14 +40,16 @@
 </script>
 
 <div class="game-container">
-    {#each items as item}
+    {#each items as item, index}
         <img
                 src={item.src}
                 draggable="false"
                 class="item {item.selected ? 'selected' : ''} {item.highlighted ? 'highlighted-icon' : ''}"
                 id={item.id}
                 alt="Game item"
+                style="--translateY: -{Math.floor(index / 10) * 15}px;"
                 on:click={() => handleClick(item)}
         />
     {/each}
 </div>
+

@@ -73,21 +73,15 @@
                     id: `item${parseInt(data.bubbleId)}`,
                     src: `/bubbles/50shashek_${data.bubbleImg}.png`
                 };
-                console.log(`OpenBubble`);
                 openBubbles.push(newBubble);
-                console.log(newBubble);
 
                 openBubbles = [...openBubbles];
             },
             closeBubbles: (data) => {
-                console.log(`closeBubbles`);
-                console.log(data);
                 openBubbles = openBubbles.filter(bubble =>
                     bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
-
-                console.log(openBubbles)
             },
             getCurrentPlayer: (data) => {
                 let currentPlayer = players.filter(value => {
@@ -101,8 +95,6 @@
                 players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
 
-                console.log(`CurrentPlayer`);
-                console.log(data);
             }
         });
 
