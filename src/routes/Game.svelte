@@ -10,4 +10,4 @@
 </script>
 
 <NavigationMenu/>
-<GameWrapper/>
+<GameWrapper {room}/>

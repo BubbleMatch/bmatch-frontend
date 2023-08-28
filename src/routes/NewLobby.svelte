@@ -4,7 +4,7 @@
     import {getProfile} from "../lib/utils/getProfile.js";
     import {getCookie} from "../lib/utils/cookies.js";
     import {onMount} from "svelte";
-    import {initializeLobbySocket, joinLobby, generateGame, verifyWSLobby} from '../lib/webSocket/lobbySocket.js';
+    import {initializeLobbySocket, joinLobby, generateGame} from '../lib/webSocket/lobbySocket.js';
     import {copyToClipboard} from "./../lib/utils/uiHelpers.js";
 
     let socket;
@@ -20,6 +20,7 @@
 
     let mmr = 2000;
     let username = "Guest";
+    let uuid = '';
 
     onMount(async () => {
         if (getCookie('token') !== null) {
@@ -86,16 +87,15 @@
                     readyVisible = true;
                 },
 
-                acceptGameRequest: (data) => {
-                    console.log(data);
+                gameUUID: (data) => {
+                    uuid = data;
+                    window.location.href=`/game/${data}`;
                 }
             });
 
             joinLobby(socket, {
                 id: socket.id,
-                username: username,
-                mmr: mmr,
-                type: "Player",
+                token: getCookie('token'),
                 lobbyID: lobbyID
             });
 
@@ -108,12 +108,8 @@
 
     function addBot() {
         if (players.length < 4) {
-            playerId++;
-
             joinLobby(socket, {
-                    id: playerId,
-                    username: `Bot ${playerId}`,
-                    mmr: 2000, type: "Bot",
+                    type: "Bot",
                     lobbyID: lobbyID
                 }
             );
@@ -123,28 +119,21 @@
     function requestGame() {
         if (players.length === 4) {
             generateGame(socket, {
-                    JWT: getCookie('token'),
-                    lobbyID: lobbyID
+                    token: getCookie('token'),
                 }
             );
         }
     }
 
-    function verifyLobby() {
-        if (players.length === 4) {
-            verifyWSLobby(socket, {
-                    JWT: getCookie('token')
-                }
-            );
-            readyVisible = false;
-        }
+    function redirectGame() {
+        window.location.href = 'game/' + uuid;
     }
+
 </script>
 
 <svelte:head>
     <title>Lobby: #{username}</title>
 </svelte:head>
-
 
 <NavigationMenu></NavigationMenu>
 <div class="wrapper new-lobby">
@@ -184,7 +173,7 @@
 
     </div>
 </div>
-<div class="ready" on:click={verifyLobby} style="display: {readyVisible ? 'flex' : 'none'};">
+<div class="ready" on:click={redirectGame} style="display: {readyVisible ? 'flex' : 'none'};">
     READY
 </div>
 <style>

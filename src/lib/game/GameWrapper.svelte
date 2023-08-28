@@ -2,13 +2,117 @@
     import PlayerBlock from './PlayerBlock.svelte';
     import Toolbox from "./Toolbox.svelte";
     import GameField from "./GameField.svelte";
+    import {onMount} from "svelte";
+    import {getCookie} from "../utils/cookies.js";
+    import {getProfile} from "../utils/getProfile.js";
+    import {initializeGameSocket, joinGame} from "./../webSocket/gameSocket.js";
+    import guestSvg from "./../../assets/guest.svg";
 
-    let players = [
-        {id: 1, nickname: 'nickname1', mmr: '2000', isActive: true},
-        {id: 2, nickname: 'nickname2', mmr: '2000'},
-        {id: 3, nickname: 'nickname2', mmr: '2000'},
-        {id: 4, nickname: 'nickname2', mmr: '2000'}
-    ];
+    let socket;
+    let players = [];
+    export let room;
+
+    let openBubbles = [];
+    let isYourTurn = false;
+
+    let username = '';
+
+    function sendOpenedBubble(bubbleId) {
+        if (socket && isYourTurn) {
+            socket.emit('sendOpenedBubble', {bubbleId: bubbleId, token: getCookie('token'), gameUUID: room});
+        }
+    }
+
+    onMount(async () => {
+
+        if (getCookie('token')) {
+            let profile = await getProfile(getCookie('token'));
+            username = profile.username;
+        }
+
+        socket = initializeGameSocket({
+            onPlayerListUpdated: (data) => {
+                players = data.map((player, index) => ({
+                    ...player,
+                    id: index + 1,
+                    img: {guestSvg}
+                }));
+            },
+            systemMessage: (data) => {
+
+            },
+            onGameRemoved: (data) => {
+
+            },
+            userExist: (data) => {
+
+            },
+            gameRedirect: (data) => {
+
+            },
+            gameAction: (data) => {
+                openBubbles = [];
+
+                data.openBubbles.forEach(newBubble =>{
+                    openBubbles.push({
+                        id: `item${parseInt(newBubble.bubbleId)}`,
+                        src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
+                    });
+                });
+
+                openBubbles = [...openBubbles];
+            },
+            timeRequested: (data) => {
+
+            },
+            isPaused: (data) => {
+
+            },
+            openBubble: (data) => {
+                let newBubble = {
+                    id: `item${parseInt(data.bubbleId)}`,
+                    src: `/bubbles/50shashek_${data.bubbleImg}.png`
+                };
+                console.log(`OpenBubble`);
+                openBubbles.push(newBubble);
+                console.log(newBubble);
+
+                openBubbles = [...openBubbles];
+            },
+            closeBubbles: (data) => {
+                console.log(`closeBubbles`);
+                console.log(data);
+                openBubbles = openBubbles.filter(bubble =>
+                    bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
+                    bubble.id !== `item${parseInt(data.secondBubbleId)}`
+                );
+
+                console.log(openBubbles)
+            },
+            getCurrentPlayer: (data) => {
+                let currentPlayer = players.filter(value => {
+                    return value.username === data.username
+                })[0];
+
+                for (let i = 0; i < players.length; i++) {
+                    players[i].isActive = false;
+                }
+
+                players[currentPlayer.id - 1].isActive = true;
+                isYourTurn = (username === currentPlayer.username);
+
+                console.log(`CurrentPlayer`);
+                console.log(data);
+            }
+        });
+
+        joinGame(socket, {
+            id: socket.id,
+            token: getCookie('token'),
+            gameUUID: room
+        });
+
+    });
 
     let chatVisible = false;
 
@@ -20,7 +124,7 @@
 
 <div class="wrapper game">
     <div class="bg">
-        <GameField/>
+        <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
     <div class="toolbox">
         <Toolbox {chatVisible} toggleChat={toggleChat}/>
