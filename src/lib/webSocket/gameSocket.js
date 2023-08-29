@@ -13,7 +13,8 @@ export function initializeGameSocket(
         isPaused,
         openBubble,
         closeBubbles,
-        getCurrentPlayer
+        getCurrentPlayer,
+        onGameOver
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
@@ -59,8 +60,12 @@ export function initializeGameSocket(
         openBubble(data);
     });
 
-    socket.on('closeBubbles', data =>{
+    socket.on('closeBubbles', data => {
         closeBubbles(data);
+    });
+
+    socket.on('gameOver', data => {
+        onGameOver(data);
     })
 
     return socket;

@@ -83,6 +83,9 @@
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
             },
+            onGameOver: (data) => {
+                alert("Game over")
+            },
             getCurrentPlayer: (data) => {
                 let currentPlayer = players.filter(value => {
                     return value.username === data.username
@@ -133,7 +136,6 @@
         }
 
 
-
     });
 
 
@@ -156,7 +158,7 @@
     window.addEventListener('resize', adjustBackgroundImage);
 
 
-    import { onDestroy } from 'svelte';
+    import {onDestroy} from 'svelte';
 
     onDestroy(() => {
         window.removeEventListener('resize', adjustBackgroundImage);

@@ -6,6 +6,13 @@
   user-select: none;
   background-size: contain;
   background-repeat: no-repeat;
+
+}
+
+@media (min-width: 2560px) {
+  .game-container {
+    width: calc(860px * 1.1); /* Увеличиваем ширину в 1.5 раза */
+  }
 }
 
 .bg {
@@ -94,17 +101,14 @@
 
 
 .toolbox {
-  max-width: 320px;
-  max-height: 640px;
+  width: 320px;
+  height: 55vh;
 
-  min-width: 320px;
-  min-height: 640px;
 
   margin-left: 88px;
   align-self: flex-start;
   display: flex;
   flex: 1;
-  height: calc(100vh - 30%);
 
   flex-direction: column;
 
