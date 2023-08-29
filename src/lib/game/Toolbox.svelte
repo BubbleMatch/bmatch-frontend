@@ -81,7 +81,7 @@
          tabindex="0"
          aria-label="Toggle chat"
          on:keydown={() => {}}>
-        <div class="chat-icon"></div>
+        <div class={chatVisible ? 'game-icon' : 'chat-icon'}></div>
     </div>
     <div class="timer">
         Time left: {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}

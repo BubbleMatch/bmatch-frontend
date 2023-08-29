@@ -97,7 +97,7 @@
                 class="item"
                 id={item.id}
                 alt="Game item"
-                style="--translateY: -{Math.floor(index / 10) * 15}px;"
+                style="--translateY: -{Math.floor(index / 10) * 22}px;"
                 on:click={() => handleClick(item)}
                 on:mouseout={handleMouseOut}
                 on:mouseover={handleMouseOver}

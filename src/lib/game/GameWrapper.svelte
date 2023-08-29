@@ -53,7 +53,7 @@
             gameAction: (data) => {
                 openBubbles = [];
 
-                data.openBubbles.forEach(newBubble =>{
+                data.openBubbles.forEach(newBubble => {
                     openBubbles.push({
                         id: `item${parseInt(newBubble.bubbleId)}`,
                         src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
@@ -104,6 +104,53 @@
             gameUUID: room
         });
 
+        const firstItem = document.querySelector('#item0');
+        const lastItem = document.querySelector('#item99');
+
+        if (firstItem && lastItem) {
+            const firstItemRect = firstItem.getBoundingClientRect();
+            const lastItemRect = lastItem.getBoundingClientRect();
+
+            const bgImage = document.createElement('img');
+            bgImage.src = "/bg.png";
+
+            bgImage.style.position = 'absolute';
+            bgImage.style.left = `${firstItemRect.left - 20}px`;      // Уменьшаем слева на 20px
+            bgImage.style.top = `${firstItemRect.top + 7}px`;         // Уменьшаем сверху на 7px
+            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`; // Увеличиваем ширину на 40px (20 слева + 20 справа)
+            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`; // Увеличиваем высоту на 29px (-7 сверху + 36 снизу)
+
+            bgImage.style.zIndex = '1';
+
+            document.body.appendChild(bgImage);
+        }
+
+    });
+
+
+    function adjustBackgroundImage() {
+        const firstItem = document.querySelector('#item0');
+        const lastItem = document.querySelector('#item99');
+        const bgImage = document.querySelector('img[src="/bg.png"]');
+
+        if (firstItem && lastItem && bgImage) {
+            const firstItemRect = firstItem.getBoundingClientRect();
+            const lastItemRect = lastItem.getBoundingClientRect();
+
+            bgImage.style.left = `${firstItemRect.left - 20}px`;
+            bgImage.style.top = `${firstItemRect.top + 7}px`;
+            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
+            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
+        }
+    }
+
+    window.addEventListener('resize', adjustBackgroundImage);
+
+
+    import { onDestroy } from 'svelte';
+
+    onDestroy(() => {
+        window.removeEventListener('resize', adjustBackgroundImage);
     });
 
     let chatVisible = false;
