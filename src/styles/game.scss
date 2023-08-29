@@ -26,10 +26,12 @@
 
 .wrapper.game {
   display: flex;
-  align-items: center;
+  //align-items: center;
+  //place-content: center;
   flex-direction: row;
-  place-content: center;
-  margin: 20px 5% 141px;
+  margin: 20px 10% 141px;
+
+  justify-content: space-between;
 }
 
 
@@ -94,6 +96,10 @@
 .toolbox {
   max-width: 320px;
   max-height: 640px;
+
+  min-width: 320px;
+  min-height: 640px;
+
   margin-left: 88px;
   align-self: flex-start;
   display: flex;
