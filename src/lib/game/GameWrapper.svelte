@@ -107,6 +107,13 @@
         const firstItem = document.querySelector('#item0');
         const lastItem = document.querySelector('#item99');
 
+        const screenWidth = window.screen.width * window.devicePixelRatio;
+        const screenHeight = window.screen.height * window.devicePixelRatio;
+
+        if (screenWidth >= 2560 && screenHeight >= 1440) {
+            document.body.style.zoom = "1.25";
+        }
+
         if (firstItem && lastItem) {
             const firstItemRect = firstItem.getBoundingClientRect();
             const lastItemRect = lastItem.getBoundingClientRect();
@@ -115,15 +122,17 @@
             bgImage.src = "/bg.png";
 
             bgImage.style.position = 'absolute';
-            bgImage.style.left = `${firstItemRect.left - 20}px`;      // Уменьшаем слева на 20px
-            bgImage.style.top = `${firstItemRect.top + 7}px`;         // Уменьшаем сверху на 7px
-            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`; // Увеличиваем ширину на 40px (20 слева + 20 справа)
-            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`; // Увеличиваем высоту на 29px (-7 сверху + 36 снизу)
+            bgImage.style.left = `${firstItemRect.left - 20}px`;
+            bgImage.style.top = `${firstItemRect.top + 7}px`;
+            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
+            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
 
             bgImage.style.zIndex = '1';
 
             document.body.appendChild(bgImage);
         }
+
+
 
     });
 

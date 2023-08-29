@@ -65,14 +65,14 @@
                 elem.style.animation = 'sinusoidalLeave 1s forwards';
                 setTimeout(() => {
                     elem.style.animation = '';
-                    elem.style.backgroundImage = '';  // очищаем backgroundImage
+                    elem.style.backgroundImage = '';
                 }, 1000);
             });
         } else {
             event.currentTarget.style.animation = 'sinusoidalLeave 1s forwards';
             setTimeout(() => {
                 event.currentTarget.style.animation = '';
-                event.currentTarget.style.backgroundImage = '';  // очищаем backgroundImage
+                event.currentTarget.style.backgroundImage = '';
             }, 1000);
         }
     }

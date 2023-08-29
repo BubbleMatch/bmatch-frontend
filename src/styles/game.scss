@@ -3,9 +3,7 @@
 
   display: grid;
   grid-template-columns: repeat(10, 1fr);
-  // max-width: 1200px;
   user-select: none;
-  //padding: 5px;
   background-size: contain;
   background-repeat: no-repeat;
 }
@@ -96,7 +94,7 @@
 .toolbox {
   max-width: 320px;
   max-height: 640px;
-  margin-left: 50px;
+  margin-left: 88px;
   align-self: flex-start;
   display: flex;
   flex: 1;
@@ -271,7 +269,7 @@
       margin-left: 10px;
 
       .nickname {
-        font-size: 2rem;
+        font-size: 1.3rem;
       }
     }
   }

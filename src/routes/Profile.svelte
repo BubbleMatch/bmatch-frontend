@@ -42,7 +42,7 @@
         scales: {
             r: {
                 ticks: {
-                    stepSize: 10,  // это представляет каждые 10 процентов
+                    stepSize: 10,
                     backdropColor: 'transparent',
                     max: 100
                 },
