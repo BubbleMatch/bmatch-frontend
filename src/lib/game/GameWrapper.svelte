@@ -39,16 +39,11 @@
                 }));
             },
             systemMessage: (data) => {
-
+                console.log(data);
             },
-            onGameRemoved: (data) => {
-
-            },
-            userExist: (data) => {
-
-            },
-            gameRedirect: (data) => {
-
+            onUserExist: () => {
+                socket.disconnect();
+                alert("Disconnected")
             },
             gameAction: (data) => {
                 openBubbles = [];
@@ -61,6 +56,9 @@
                 });
 
                 openBubbles = [...openBubbles];
+            },
+            userAlreadyInGame: (data) => {
+                alert(`You are signed in game ${data}`)
             },
             timeRequested: (data) => {
 
@@ -117,7 +115,7 @@
             document.body.style.zoom = "1.25";
         }
 
-        if (firstItem && lastItem) {
+        if (firstItem && lastItem && !document.querySelector('img[src="/bg.png"]')) {
             const firstItemRect = firstItem.getBoundingClientRect();
             const lastItemRect = lastItem.getBoundingClientRect();
 
@@ -133,8 +131,9 @@
             bgImage.style.zIndex = '1';
 
             document.body.appendChild(bgImage);
+        } else if (document.querySelector('img[src="/bg.png"]')) {
+            adjustBackgroundImage();
         }
-
 
     });
 
@@ -162,6 +161,10 @@
 
     onDestroy(() => {
         window.removeEventListener('resize', adjustBackgroundImage);
+        const bgImage = document.querySelector('img[src="/bg.png"]');
+        if (bgImage) {
+            document.body.removeChild(bgImage);
+        }
     });
 
     let chatVisible = false;

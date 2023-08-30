@@ -5,51 +5,46 @@ export function initializeGameSocket(
     {
         onPlayerListUpdated,
         systemMessage,
-        onGameRemoved,
-        userExist,
-        gameRedirect,
         gameAction,
         timeRequested,
         isPaused,
         openBubble,
         closeBubbles,
         getCurrentPlayer,
-        onGameOver
+        onGameOver,
+        onUserExist,
+        userAlreadyInGame
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
-    const socket = io.connect(`wss://${wsUrl}/`);
+    const socket = io.connect(`${wsUrl}/`);
 
     socket.on('playerList', playerList => {
         onPlayerListUpdated(playerList);
     });
 
+    socket.on('userExist', (data) => {
+        onUserExist(data);
+    });
+
+    socket.on('timeRequested', data => {
+        timeRequested(data);
+    })
+
     socket.on('systemMessage', message => {
-        console.log(message);
-        systemMessage();
-    });
-
-    socket.on('onGameRemoved', data => {
-        console.log(data);
-        onGameRemoved();
-    });
-
-    socket.on('userExist', data => {
-        console.log(data);
-        userExist();
+        systemMessage(message);
     });
 
     socket.on('systemMessage', message => {
-        console.log(message);
-        systemMessage();
+        systemMessage(message);
     });
+
+    socket.on('userAlreadyInGame' , message => {
+        userAlreadyInGame(message);
+    })
 
     socket.on('gameAction', action => {
         gameAction(action);
-    })
-
-    socket.on('gameRedirect', data => {
-        gameRedirect(data);
     });
 
     socket.on('currentPlayer', data => {
@@ -60,6 +55,9 @@ export function initializeGameSocket(
         openBubble(data);
     });
 
+    socket.on('isPaused', data =>{
+        isPaused(data);
+    })
     socket.on('closeBubbles', data => {
         closeBubbles(data);
     });

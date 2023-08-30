@@ -38,41 +38,44 @@
         event.preventDefault();
     }
 
+    function updateStyle(elementId, animation, backgroundImage) {
+        const elem = document.getElementById(elementId);
+        if (!elem) return;
+
+        elem.style.animation = animation;
+        elem.style.backgroundImage = backgroundImage;
+    }
+
+
     function handleMouseOver(event) {
         const targetSrc = event.currentTarget.src;
 
         const duplicateItems = getDuplicateItems(targetSrc);
         if (duplicateItems.length > 1) {
             duplicateItems.forEach(item => {
-                const elem = document.getElementById(item.id);
-                elem.style.animation = 'sinusoidalHover 2s infinite';
-                elem.style.backgroundImage = 'url("/stroke.png")';
-                elem.style.backgroundSize = 'cover';
-                elem.style.backgroundRepeat = 'no-repeat'
+                updateStyle(item.id, 'sinusoidalHover 2s infinite', 'url("/stroke.png")');
             });
         } else {
-            event.currentTarget.style.animation = 'sinusoidalHover 2s infinite';
+            updateStyle(event.currentTarget.id, 'sinusoidalHover 2s infinite', '');
         }
     }
 
     function handleMouseOut(event) {
         const targetSrc = event.currentTarget.src;
+        const currentTargetId = event.currentTarget.id;
 
         const duplicateItems = getDuplicateItems(targetSrc);
         if (duplicateItems.length > 1) {
             duplicateItems.forEach(item => {
-                const elem = document.getElementById(item.id);
-                elem.style.animation = 'sinusoidalLeave 1s forwards';
+                updateStyle(item.id, 'sinusoidalLeave 1s forwards', '');
                 setTimeout(() => {
-                    elem.style.animation = '';
-                    elem.style.backgroundImage = '';
+                    updateStyle(item.id, '', '');
                 }, 1000);
             });
         } else {
-            event.currentTarget.style.animation = 'sinusoidalLeave 1s forwards';
+            updateStyle(currentTargetId, 'sinusoidalLeave 1s forwards', '');
             setTimeout(() => {
-                event.currentTarget.style.animation = '';
-                event.currentTarget.style.backgroundImage = '';
+                updateStyle(currentTargetId, '', '');
             }, 1000);
         }
     }
