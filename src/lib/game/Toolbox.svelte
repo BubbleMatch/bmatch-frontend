@@ -5,12 +5,14 @@
 
     export let chatVisible;
     export let toggleChat;
+    export let socket;
 
     let minutes = 0;
     let seconds = 0;
     let messageContent = '';
     let roomId = '';
-    let messages = [];
+    export let messages = [];
+
     let currentUser = '';
     let chatContainer;
 
@@ -58,11 +60,20 @@
             event.preventDefault();
             messageContent = event.target.value;
 
-            if (messageContent.length < 1 || !canSend) {
-                return;
+            if(!canSend) return;
+
+            if (messageContent.length < 1) {
+                messageContent = "GG, WP";
             }
 
             event.target.value = '';
+
+            socket.emit('chatMessage', {
+                message: messageContent,
+                gameUUID: roomId,
+                username: currentUser,
+                token: getCookie('token')
+            });
 
             canSend = false;
 
@@ -81,7 +92,7 @@
          tabindex="0"
          aria-label="Toggle chat"
          on:keydown={() => {}}>
-        <div class="chat-icon"></div>
+        <div class={chatVisible ? 'game-icon' : 'chat-icon'}></div>
     </div>
     <div class="timer">
         Time left: {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}

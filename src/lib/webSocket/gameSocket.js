@@ -5,50 +5,52 @@ export function initializeGameSocket(
     {
         onPlayerListUpdated,
         systemMessage,
-        onGameRemoved,
-        userExist,
-        gameRedirect,
         gameAction,
         timeRequested,
         isPaused,
         openBubble,
         closeBubbles,
-        getCurrentPlayer
+        getCurrentPlayer,
+        onGameOver,
+        onUserExist,
+        userAlreadyInGame,
+        onReceiveMessage,
+        onPing
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
-    const socket = io.connect(`wss://${wsUrl}/`);
+    const socket = io.connect(`${wsUrl}/`);
 
     socket.on('playerList', playerList => {
         onPlayerListUpdated(playerList);
     });
 
-    socket.on('systemMessage', message => {
-        console.log(message);
-        systemMessage();
+    socket.on('receiveMessage', (data) => {
+        onReceiveMessage(data)
     });
 
-    socket.on('onGameRemoved', data => {
-        console.log(data);
-        onGameRemoved();
+    socket.on('userExist', (data) => {
+        onUserExist(data);
     });
 
-    socket.on('userExist', data => {
-        console.log(data);
-        userExist();
-    });
+    socket.on('timeRequested', data => {
+        timeRequested(data);
+    })
 
     socket.on('systemMessage', message => {
-        console.log(message);
-        systemMessage();
+        systemMessage(message);
     });
+
+    socket.on('systemMessage', message => {
+        systemMessage(message);
+    });
+
+    socket.on('userAlreadyInGame' , message => {
+        userAlreadyInGame(message);
+    })
 
     socket.on('gameAction', action => {
         gameAction(action);
-    })
-
-    socket.on('gameRedirect', data => {
-        gameRedirect(data);
     });
 
     socket.on('currentPlayer', data => {
@@ -59,9 +61,29 @@ export function initializeGameSocket(
         openBubble(data);
     });
 
-    socket.on('closeBubbles', data =>{
-        closeBubbles(data);
+    socket.on('isPaused', data =>{
+        isPaused(data);
     })
+    socket.on('closeBubbles', data => {
+        closeBubbles(data);
+    });
+
+    socket.on('gameOver', data => {
+        onGameOver(data);
+    })
+
+    setInterval(() => {
+        const start = Date.now();
+
+        socket.emit("ping");
+
+        const onPong = () => {
+            onPing(Date.now() - start);
+            socket.off('pong', onPong); // Удаляем обработчик после того, как он был вызван
+        };
+
+        socket.on('pong', onPong);
+    }, 1000);
 
     return socket;
 }

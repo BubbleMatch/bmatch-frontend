@@ -11,7 +11,7 @@ export function initializeLobbySocket({
                                       }) {
 
     let wsUrl = import.meta.env.VITE_WS_LOBBY_URL;
-    const socket = io.connect(`wss://${wsUrl}/`);
+    const socket = io.connect(`${wsUrl}/`);
 
     socket.on('playerList', playerList => {
         let currentLobbyPlayers = JSON.parse(playerList.Players);

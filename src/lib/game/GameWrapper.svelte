@@ -10,6 +10,8 @@
 
     let socket;
     let players = [];
+    let messages = [];
+
     export let room;
 
     let openBubbles = [];
@@ -38,22 +40,26 @@
                     img: {guestSvg}
                 }));
             },
+            onReceiveMessage: (data) => {
+                messages = [...messages, {username: data.username, content: data.message}];
+            },
             systemMessage: (data) => {
-
+                console.log(data);
             },
-            onGameRemoved: (data) => {
-
+            onUserExist: () => {
+                socket.disconnect();
+                alert("Disconnected")
             },
-            userExist: (data) => {
-
-            },
-            gameRedirect: (data) => {
-
+            onPing: (latency) =>{
+               let currentIndex = players.findIndex(u => u.username === username);
+               if(currentIndex !== -1){
+                   players[currentIndex].latency = `${latency} ms`;
+               }
             },
             gameAction: (data) => {
                 openBubbles = [];
 
-                data.openBubbles.forEach(newBubble =>{
+                data.openBubbles.forEach(newBubble => {
                     openBubbles.push({
                         id: `item${parseInt(newBubble.bubbleId)}`,
                         src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
@@ -61,6 +67,9 @@
                 });
 
                 openBubbles = [...openBubbles];
+            },
+            userAlreadyInGame: (data) => {
+                alert(`You are signed in game ${data}`)
             },
             timeRequested: (data) => {
 
@@ -73,21 +82,18 @@
                     id: `item${parseInt(data.bubbleId)}`,
                     src: `/bubbles/50shashek_${data.bubbleImg}.png`
                 };
-                console.log(`OpenBubble`);
                 openBubbles.push(newBubble);
-                console.log(newBubble);
 
                 openBubbles = [...openBubbles];
             },
             closeBubbles: (data) => {
-                console.log(`closeBubbles`);
-                console.log(data);
                 openBubbles = openBubbles.filter(bubble =>
                     bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
-
-                console.log(openBubbles)
+            },
+            onGameOver: (data) => {
+                alert("Game over")
             },
             getCurrentPlayer: (data) => {
                 let currentPlayer = players.filter(value => {
@@ -101,8 +107,6 @@
                 players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
 
-                console.log(`CurrentPlayer`);
-                console.log(data);
             }
         });
 
@@ -112,6 +116,63 @@
             gameUUID: room
         });
 
+        const firstItem = document.querySelector('#item0');
+        const lastItem = document.querySelector('#item99');
+
+        const screenWidth = window.screen.width * window.devicePixelRatio;
+        const screenHeight = window.screen.height * window.devicePixelRatio;
+
+
+        if (firstItem && lastItem && !document.querySelector('img[src="/bg.png"]')) {
+            const firstItemRect = firstItem.getBoundingClientRect();
+            const lastItemRect = lastItem.getBoundingClientRect();
+
+            const bgImage = document.createElement('img');
+            bgImage.src = "/bg.png";
+
+            bgImage.style.position = 'absolute';
+            bgImage.style.left = `${firstItemRect.left - 20}px`;
+            bgImage.style.top = `${firstItemRect.top + 7}px`;
+            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
+            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
+
+            bgImage.style.zIndex = '1';
+
+            document.body.appendChild(bgImage);
+        } else if (document.querySelector('img[src="/bg.png"]')) {
+            adjustBackgroundImage();
+        }
+
+    });
+
+
+    function adjustBackgroundImage() {
+        const firstItem = document.querySelector('#item0');
+        const lastItem = document.querySelector('#item99');
+        const bgImage = document.querySelector('img[src="/bg.png"]');
+
+        if (firstItem && lastItem && bgImage) {
+            const firstItemRect = firstItem.getBoundingClientRect();
+            const lastItemRect = lastItem.getBoundingClientRect();
+
+            bgImage.style.left = `${firstItemRect.left - 20}px`;
+            bgImage.style.top = `${firstItemRect.top + 7}px`;
+            bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
+            bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
+        }
+    }
+
+    window.addEventListener('resize', adjustBackgroundImage);
+
+
+    import {onDestroy} from 'svelte';
+
+    onDestroy(() => {
+        window.removeEventListener('resize', adjustBackgroundImage);
+        const bgImage = document.querySelector('img[src="/bg.png"]');
+        if (bgImage) {
+            document.body.removeChild(bgImage);
+        }
     });
 
     let chatVisible = false;
@@ -127,7 +188,7 @@
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
     <div class="toolbox">
-        <Toolbox {chatVisible} toggleChat={toggleChat}/>
+        <Toolbox {chatVisible} {socket} {messages} toggleChat={toggleChat}/>
         <div class="player-wrapper" style="display: {chatVisible ? 'none' : 'flex'};">
             {#each players as player}
                 <PlayerBlock {...player}/>

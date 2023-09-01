@@ -37,17 +37,73 @@
     function preventDefault(event) {
         event.preventDefault();
     }
+
+    function updateStyle(elementId, animation, backgroundImage) {
+        const elem = document.getElementById(elementId);
+        if (!elem) return;
+
+        elem.style.animation = animation;
+        elem.style.backgroundImage = backgroundImage;
+    }
+
+
+    function handleMouseOver(event) {
+        const targetSrc = event.currentTarget.src;
+
+        const duplicateItems = getDuplicateItems(targetSrc);
+        if (duplicateItems.length > 1) {
+            duplicateItems.forEach(item => {
+                updateStyle(item.id, 'sinusoidalHover 2s infinite', 'url("/stroke.png")');
+            });
+        } else {
+            updateStyle(event.currentTarget.id, 'sinusoidalHover 2s infinite', '');
+        }
+    }
+
+    function handleMouseOut(event) {
+        const targetSrc = event.currentTarget.src;
+        const currentTargetId = event.currentTarget.id;
+
+        const duplicateItems = getDuplicateItems(targetSrc);
+        if (duplicateItems.length > 1) {
+            duplicateItems.forEach(item => {
+                updateStyle(item.id, 'sinusoidalLeave 1s forwards', '');
+                setTimeout(() => {
+                    updateStyle(item.id, '', '');
+                }, 1000);
+            });
+        } else {
+            updateStyle(currentTargetId, 'sinusoidalLeave 1s forwards', '');
+            setTimeout(() => {
+                updateStyle(currentTargetId, '', '');
+            }, 1000);
+        }
+    }
+
+    function getRelativePath(fullPath) {
+        const index = fullPath.indexOf('/bubbles/');
+        return (index !== -1) ? fullPath.slice(index) : fullPath;
+    }
+
+    function getDuplicateItems(targetSrc) {
+        const relativeTargetSrc = getRelativePath(targetSrc);
+        return items.filter(item => item.src === relativeTargetSrc);
+    }
+
 </script>
 
 <div class="game-container">
-    {#each items as item}
+    {#each items as item, index}
         <img
                 src={item.src}
                 draggable="false"
-                class="item {item.selected ? 'selected' : ''} {item.highlighted ? 'highlighted-icon' : ''}"
+                class="item"
                 id={item.id}
                 alt="Game item"
+                style="--translateY: -{Math.floor(index / 10) * 22}px;"
                 on:click={() => handleClick(item)}
+                on:mouseout={handleMouseOut}
+                on:mouseover={handleMouseOver}
         />
     {/each}
 </div>
