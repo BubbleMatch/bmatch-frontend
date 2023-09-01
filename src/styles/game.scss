@@ -282,6 +282,15 @@
         font-size: 1.3rem;
       }
     }
+
+    .latency-block {
+      display: flex;
+      flex:1;
+      justify-content: flex-end;
+      .latency{
+        margin-right: 35px;
+      }
+    }
   }
 }
 

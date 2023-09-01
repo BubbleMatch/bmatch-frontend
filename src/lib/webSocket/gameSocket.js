@@ -13,7 +13,9 @@ export function initializeGameSocket(
         getCurrentPlayer,
         onGameOver,
         onUserExist,
-        userAlreadyInGame
+        userAlreadyInGame,
+        onReceiveMessage,
+        onPing
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
@@ -21,6 +23,10 @@ export function initializeGameSocket(
 
     socket.on('playerList', playerList => {
         onPlayerListUpdated(playerList);
+    });
+
+    socket.on('receiveMessage', (data) => {
+        onReceiveMessage(data)
     });
 
     socket.on('userExist', (data) => {
@@ -65,6 +71,19 @@ export function initializeGameSocket(
     socket.on('gameOver', data => {
         onGameOver(data);
     })
+
+    setInterval(() => {
+        const start = Date.now();
+
+        socket.emit("ping");
+
+        const onPong = () => {
+            onPing(Date.now() - start);
+            socket.off('pong', onPong); // Удаляем обработчик после того, как он был вызван
+        };
+
+        socket.on('pong', onPong);
+    }, 1000);
 
     return socket;
 }

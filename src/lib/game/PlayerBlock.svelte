@@ -4,6 +4,7 @@
     export let mmr = '';
     export let isActive = false;
     export let img;
+    export let latency = '';
 </script>
 
 <div class="player-block">
@@ -17,6 +18,9 @@
         <div class="right">
             <div class="nickname">{username}</div>
             <div class="mmr">{mmr} MMR</div>
+        </div>
+        <div class="latency-block">
+            <div class="latency">{latency}</div>
         </div>
     </div>
 </div>

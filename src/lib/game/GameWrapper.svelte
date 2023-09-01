@@ -10,6 +10,8 @@
 
     let socket;
     let players = [];
+    let messages = [];
+
     export let room;
 
     let openBubbles = [];
@@ -38,12 +40,21 @@
                     img: {guestSvg}
                 }));
             },
+            onReceiveMessage: (data) => {
+                messages = [...messages, {username: data.username, content: data.message}];
+            },
             systemMessage: (data) => {
                 console.log(data);
             },
             onUserExist: () => {
                 socket.disconnect();
                 alert("Disconnected")
+            },
+            onPing: (latency) =>{
+               let currentIndex = players.findIndex(u => u.username === username);
+               if(currentIndex !== -1){
+                   players[currentIndex].latency = `${latency} ms`;
+               }
             },
             gameAction: (data) => {
                 openBubbles = [];
@@ -111,9 +122,6 @@
         const screenWidth = window.screen.width * window.devicePixelRatio;
         const screenHeight = window.screen.height * window.devicePixelRatio;
 
-        if (screenWidth >= 2560 && screenHeight >= 1440) {
-            document.body.style.zoom = "1.25";
-        }
 
         if (firstItem && lastItem && !document.querySelector('img[src="/bg.png"]')) {
             const firstItemRect = firstItem.getBoundingClientRect();
@@ -180,7 +188,7 @@
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
     <div class="toolbox">
-        <Toolbox {chatVisible} toggleChat={toggleChat}/>
+        <Toolbox {chatVisible} {socket} {messages} toggleChat={toggleChat}/>
         <div class="player-wrapper" style="display: {chatVisible ? 'none' : 'flex'};">
             {#each players as player}
                 <PlayerBlock {...player}/>
