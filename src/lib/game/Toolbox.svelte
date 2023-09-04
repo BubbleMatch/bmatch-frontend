@@ -1,7 +1,7 @@
 <script>
-    import {onMount} from 'svelte';
-    import {getProfile} from "../utils/getProfile.js";
-    import {getCookie} from "../utils/cookies.js";
+    import { onMount, onDestroy } from 'svelte';
+    import { getProfile } from "../utils/getProfile.js";
+    import { getCookie } from "../utils/cookies.js";
 
     export let chatVisible;
     export let toggleChat;
@@ -11,10 +11,13 @@
     let seconds = 0;
     let messageContent = '';
     let roomId = '';
+    export let totalSeconds;
+
     export let messages = [];
 
     let currentUser = '';
     let chatContainer;
+    let countdownInterval;
 
     function handleMouseClick(event) {
         if (event.altKey && event.button === 0) {
@@ -34,14 +37,20 @@
         const segments = path.split('/');
         roomId = segments[segments.length - 1];
 
-
         document.addEventListener('mousedown', handleMouseClick);
+
+        // If you already have totalSeconds at this point, start the countdown.
+        if (totalSeconds) startCountdown();
 
         return () => {
             document.removeEventListener('mousedown', handleMouseClick);
+            clearInterval(countdownInterval);  // Clear interval on component destruction
         };
-
     });
+
+    $: if (typeof totalSeconds !== 'undefined') {
+        seconds = totalSeconds
+    }
 
     $: if (messages.length) {
         scrollToBottom();
@@ -60,7 +69,7 @@
             event.preventDefault();
             messageContent = event.target.value;
 
-            if(!canSend) return;
+            if (!canSend) return;
 
             if (messageContent.length < 1) {
                 messageContent = "GG, WP";
@@ -82,7 +91,6 @@
             }, 1000);
         }
     }
-
 </script>
 
 <div class="header">

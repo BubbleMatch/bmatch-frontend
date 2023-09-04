@@ -19,11 +19,30 @@
 
     let username = '';
 
+    let timerInterval;
+    let totalSeconds;
+
     function sendOpenedBubble(bubbleId) {
         if (socket && isYourTurn) {
             socket.emit('sendOpenedBubble', {bubbleId: bubbleId, token: getCookie('token'), gameUUID: room});
         }
     }
+
+    function startTimer(seconds) {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        totalSeconds = seconds;
+
+        timerInterval = setInterval(() => {
+            totalSeconds--;
+
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+    }
+
 
     onMount(async () => {
 
@@ -50,11 +69,11 @@
                 socket.disconnect();
                 alert("Disconnected")
             },
-            onPing: (latency) =>{
-               let currentIndex = players.findIndex(u => u.username === username);
-               if(currentIndex !== -1){
-                   players[currentIndex].latency = `${latency} ms`;
-               }
+            onPing: (latency) => {
+                let currentIndex = players.findIndex(u => u.username === username);
+                if (currentIndex !== -1) {
+                    players[currentIndex].latency = `${latency} ms`;
+                }
             },
             gameAction: (data) => {
                 openBubbles = [];
@@ -72,7 +91,10 @@
                 alert(`You are signed in game ${data}`)
             },
             timeRequested: (data) => {
-
+                if (data === -2) {
+                    return
+                }
+                startTimer(data);
             },
             isPaused: (data) => {
 
@@ -106,7 +128,6 @@
 
                 players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
-
             }
         });
 
@@ -188,7 +209,7 @@
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
     <div class="toolbox">
-        <Toolbox {chatVisible} {socket} {messages} toggleChat={toggleChat}/>
+        <Toolbox {chatVisible} {socket} {totalSeconds} {messages} toggleChat={toggleChat}/>
         <div class="player-wrapper" style="display: {chatVisible ? 'none' : 'flex'};">
             {#each players as player}
                 <PlayerBlock {...player}/>
