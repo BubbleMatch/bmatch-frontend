@@ -39,9 +39,6 @@
 
         document.addEventListener('mousedown', handleMouseClick);
 
-        // If you already have totalSeconds at this point, start the countdown.
-        if (totalSeconds) startCountdown();
-
         return () => {
             document.removeEventListener('mousedown', handleMouseClick);
             clearInterval(countdownInterval);  // Clear interval on component destruction
@@ -103,7 +100,7 @@
         <div class={chatVisible ? 'game-icon' : 'chat-icon'}></div>
     </div>
     <div class="timer">
-        Time left: {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+        Time left: {(minutes || 0).toString().padStart(2, '0')}:{(seconds || 0).toString().padStart(2, '0')}
     </div>
 </div>
 <div class="chat" style="display: {chatVisible ? 'flex' : 'none'};">

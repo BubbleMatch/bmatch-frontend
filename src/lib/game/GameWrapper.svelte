@@ -97,7 +97,7 @@
                 startTimer(data);
             },
             isPaused: (data) => {
-
+                console.log(data);
             },
             openBubble: (data) => {
                 let newBubble = {
@@ -131,11 +131,14 @@
             }
         });
 
+
         joinGame(socket, {
             id: socket.id,
             token: getCookie('token'),
             gameUUID: room
         });
+
+        document.addEventListener('keydown', handleUserPause);
 
         const firstItem = document.querySelector('#item0');
         const lastItem = document.querySelector('#item99');
@@ -183,8 +186,21 @@
         }
     }
 
-    window.addEventListener('resize', adjustBackgroundImage);
+    //user pause
+    function handleUserPause(event) {
+        if (event.key === "F9" || event.keyCode === 120) { // 120 это код клавиши F9
+            if (socket) {
+                socket.emit('userPause', {
+                    id: socket.id,
+                    token: getCookie('token'),
+                    gameUUID: room
+                });
+            }
+        }
+    }
 
+
+    window.addEventListener('resize', adjustBackgroundImage);
 
     import {onDestroy} from 'svelte';
 
@@ -194,6 +210,8 @@
         if (bgImage) {
             document.body.removeChild(bgImage);
         }
+        socket.disconnect();
+        document.removeEventListener('keydown', handleUserPause);
     });
 
     let chatVisible = false;
