@@ -1,6 +1,25 @@
 <script>
+    import {apiSignUp, getProfile} from "../lib/utils/getProfile.js";
+    import {setCookie} from "../lib/utils/cookies.js";
+    import {navigate} from "svelte-routing";
+
     function navigateToLogin() {
         window.location.href = '/login';
+    }
+
+    let username = '';
+    let email = '';
+    let password = '';
+
+    async function signup() {
+        if (email.length < 6 || username.length < 6 || password.length < 6)
+            return;
+
+        let data = await apiSignUp(email, password, username);
+
+        if (data.statusCode === 200) {
+               navigate(`/login`);
+        }
     }
 
 </script>
@@ -9,10 +28,11 @@
         BUBBLE MATCH
     </div>
     <div class="edits-wrapper">
-        <div class="nav">
-            <input placeholder="Gmail" type="text">
-            <input placeholder="Password" type="password">
-            <div class="button">Create account</div>
+        <form class="nav" on:submit|preventDefault={signup}>
+            <input name="email" bind:value={email} placeholder="Gmail" type="email">
+            <input name="email" bind:value={username} placeholder="Username" type="text">
+            <input name="password" bind:value={password} placeholder="Password" type="password">
+            <button type="submit" class="button">Create account</button>
             <div class="info">
                 <div class="grey">Already have an account?</div>
                 <div
@@ -20,13 +40,14 @@
                         role="button"
                         tabindex="0"
                         on:click={navigateToLogin}
-                        on:keydown={() => {}}>
+                        on:keydown={navigateToLogin}>
                     Log in
                 </div>
             </div>
             <div class="privacy">
             </div>
-        </div>
+        </form>
+
     </div>
 </div>
 
