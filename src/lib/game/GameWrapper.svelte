@@ -19,6 +19,8 @@
 
     let username = '';
 
+    let gamePaused = true;
+
     let timerInterval;
     let totalSeconds;
 
@@ -26,6 +28,13 @@
         if (socket && isYourTurn) {
             socket.emit('sendOpenedBubble', {bubbleId: bubbleId, token: getCookie('token'), gameUUID: room});
         }
+    }
+
+    function addToOpenBubbles(bubbleData) {
+        openBubbles.push({
+            id: `item${parseInt(bubbleData.bubbleId)}`,
+            src: `/bubbles/50shashek_${bubbleData.bubbleImg}.png`
+        });
     }
 
     function startTimer(seconds) {
@@ -78,14 +87,20 @@
             gameAction: (data) => {
                 openBubbles = [];
 
-                data.openBubbles.forEach(newBubble => {
+                function addToOpenBubbles(bubbleData) {
                     openBubbles.push({
-                        id: `item${parseInt(newBubble.bubbleId)}`,
-                        src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
+                        id: `item${parseInt(bubbleData.bubbleId)}`,
+                        src: `/bubbles/50shashek_${bubbleData.bubbleImg}.png`
                     });
-                });
+                }
 
-                openBubbles = [...openBubbles];
+                if (Array.isArray(data.requestedBubbles)) {
+                    data.requestedBubbles.forEach(addToOpenBubbles);
+                } else if (typeof data.requestedBubbles === 'object' && data.requestedBubbles !== null) {
+                    addToOpenBubbles(data.requestedBubbles);
+                }
+
+                data.openBubbles.forEach(addToOpenBubbles);
             },
             userAlreadyInGame: (data) => {
                 alert(`You are signed in game ${data}`)
@@ -97,15 +112,10 @@
                 startTimer(data);
             },
             isPaused: (data) => {
-                console.log(data);
+                gamePaused = data.paused === "true";
             },
             openBubble: (data) => {
-                let newBubble = {
-                    id: `item${parseInt(data.bubbleId)}`,
-                    src: `/bubbles/50shashek_${data.bubbleImg}.png`
-                };
-                openBubbles.push(newBubble);
-
+                addToOpenBubbles(data)
                 openBubbles = [...openBubbles];
             },
             closeBubbles: (data) => {
@@ -160,7 +170,7 @@
             bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
             bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
 
-            bgImage.style.zIndex = '1';
+            bgImage.style.zIndex = '-1';
 
             document.body.appendChild(bgImage);
         } else if (document.querySelector('img[src="/bg.png"]')) {
@@ -222,7 +232,7 @@
 
 </script>
 
-<div class="wrapper game">
+<div class="wrapper game" style="filter: {gamePaused ? 'saturate(0);' : ''}">
     <div class="bg">
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
