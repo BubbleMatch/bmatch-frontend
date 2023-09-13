@@ -19,7 +19,10 @@
 
     let username = '';
 
-    let gamePaused = true;
+    let gamePaused = false;
+
+    $: gameStyle = gamePaused ? 'filter: saturate(0);' : '';
+
 
     let timerInterval;
     let totalSeconds;
@@ -44,7 +47,7 @@
         totalSeconds = seconds;
 
         timerInterval = setInterval(() => {
-            totalSeconds--;
+            if(totalSeconds > 0) totalSeconds--;
 
             if (totalSeconds <= 0) {
                 clearInterval(timerInterval);
@@ -95,7 +98,9 @@
                 }
 
                 if (Array.isArray(data.requestedBubbles)) {
-                    data.requestedBubbles.forEach(addToOpenBubbles);
+                    if(!(data.requestedBubbles[0].bubbleImg !== data.requestedBubbles.bubbleImg)){
+                        data.requestedBubbles.forEach(addToOpenBubbles);
+                    }
                 } else if (typeof data.requestedBubbles === 'object' && data.requestedBubbles !== null) {
                     addToOpenBubbles(data.requestedBubbles);
                 }
@@ -106,13 +111,11 @@
                 alert(`You are signed in game ${data}`)
             },
             timeRequested: (data) => {
-                if (data === -2) {
-                    return
-                }
+                console.log(data);
                 startTimer(data);
             },
             isPaused: (data) => {
-                gamePaused = data.paused === "true";
+                gamePaused = data.paused
             },
             openBubble: (data) => {
                 addToOpenBubbles(data)
@@ -179,7 +182,6 @@
 
     });
 
-
     function adjustBackgroundImage() {
         const firstItem = document.querySelector('#item0');
         const lastItem = document.querySelector('#item99');
@@ -232,7 +234,7 @@
 
 </script>
 
-<div class="wrapper game" style="filter: {gamePaused ? 'saturate(0);' : ''}">
+<div class="wrapper game" style={gameStyle}>
     <div class="bg">
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
