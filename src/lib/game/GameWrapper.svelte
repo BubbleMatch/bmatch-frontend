@@ -120,12 +120,14 @@
             openBubble: (data) => {
                 addToOpenBubbles(data)
                 openBubbles = [...openBubbles];
+                adjustBackgroundImage();
             },
             closeBubbles: (data) => {
                 openBubbles = openBubbles.filter(bubble =>
                     bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
+                adjustBackgroundImage();
             },
             onGameOver: (data) => {
                 alert("Game over")
