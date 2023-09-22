@@ -19,11 +19,42 @@
 
     let username = '';
 
+    let gamePaused = false;
+
+    $: gameStyle = gamePaused ? 'filter: saturate(0);' : '';
+
+
+    let timerInterval;
+    let totalSeconds;
+
     function sendOpenedBubble(bubbleId) {
         if (socket && isYourTurn) {
             socket.emit('sendOpenedBubble', {bubbleId: bubbleId, token: getCookie('token'), gameUUID: room});
         }
     }
+
+    function addToOpenBubbles(bubbleData) {
+        openBubbles.push({
+            id: `item${parseInt(bubbleData.bubbleId)}`,
+            src: `/bubbles/50shashek_${bubbleData.bubbleImg}.png`
+        });
+    }
+
+    function startTimer(seconds) {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+        }
+        totalSeconds = seconds;
+
+        timerInterval = setInterval(() => {
+            if(totalSeconds > 0) totalSeconds--;
+
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+            }
+        }, 1000);
+    }
+
 
     onMount(async () => {
 
@@ -50,47 +81,53 @@
                 socket.disconnect();
                 alert("Disconnected")
             },
-            onPing: (latency) =>{
-               let currentIndex = players.findIndex(u => u.username === username);
-               if(currentIndex !== -1){
-                   players[currentIndex].latency = `${latency} ms`;
-               }
+            onPing: (latency) => {
+                let currentIndex = players.findIndex(u => u.username === username);
+                if (currentIndex !== -1) {
+                    players[currentIndex].latency = `${latency} ms`;
+                }
             },
             gameAction: (data) => {
                 openBubbles = [];
 
-                data.openBubbles.forEach(newBubble => {
+                function addToOpenBubbles(bubbleData) {
                     openBubbles.push({
-                        id: `item${parseInt(newBubble.bubbleId)}`,
-                        src: `/bubbles/50shashek_${newBubble.bubbleImg}.png`
+                        id: `item${parseInt(bubbleData.bubbleId)}`,
+                        src: `/bubbles/50shashek_${bubbleData.bubbleImg}.png`
                     });
-                });
+                }
 
-                openBubbles = [...openBubbles];
+                if (Array.isArray(data.requestedBubbles)) {
+                    if(!(data.requestedBubbles[0].bubbleImg !== data.requestedBubbles.bubbleImg)){
+                        data.requestedBubbles.forEach(addToOpenBubbles);
+                    }
+                } else if (typeof data.requestedBubbles === 'object' && data.requestedBubbles !== null) {
+                    addToOpenBubbles(data.requestedBubbles);
+                }
+
+                data.openBubbles.forEach(addToOpenBubbles);
             },
             userAlreadyInGame: (data) => {
                 alert(`You are signed in game ${data}`)
             },
             timeRequested: (data) => {
-
+                console.log(data);
+                startTimer(data);
             },
             isPaused: (data) => {
-
+                gamePaused = data.paused
             },
             openBubble: (data) => {
-                let newBubble = {
-                    id: `item${parseInt(data.bubbleId)}`,
-                    src: `/bubbles/50shashek_${data.bubbleImg}.png`
-                };
-                openBubbles.push(newBubble);
-
+                addToOpenBubbles(data)
                 openBubbles = [...openBubbles];
+                adjustBackgroundImage();
             },
             closeBubbles: (data) => {
                 openBubbles = openBubbles.filter(bubble =>
                     bubble.id !== `item${parseInt(data.firstBubbleId)}` &&
                     bubble.id !== `item${parseInt(data.secondBubbleId)}`
                 );
+                adjustBackgroundImage();
             },
             onGameOver: (data) => {
                 alert("Game over")
@@ -106,15 +143,17 @@
 
                 players[currentPlayer.id - 1].isActive = true;
                 isYourTurn = (username === currentPlayer.username);
-
             }
         });
+
 
         joinGame(socket, {
             id: socket.id,
             token: getCookie('token'),
             gameUUID: room
         });
+
+        document.addEventListener('keydown', handleUserPause);
 
         const firstItem = document.querySelector('#item0');
         const lastItem = document.querySelector('#item99');
@@ -136,7 +175,7 @@
             bgImage.style.width = `${(lastItemRect.right - firstItemRect.left) + 40}px`;
             bgImage.style.height = `${(lastItemRect.bottom - firstItemRect.top) + 29}px`;
 
-            bgImage.style.zIndex = '1';
+            bgImage.style.zIndex = '-1';
 
             document.body.appendChild(bgImage);
         } else if (document.querySelector('img[src="/bg.png"]')) {
@@ -144,7 +183,6 @@
         }
 
     });
-
 
     function adjustBackgroundImage() {
         const firstItem = document.querySelector('#item0');
@@ -162,8 +200,21 @@
         }
     }
 
-    window.addEventListener('resize', adjustBackgroundImage);
+    //user pause
+    function handleUserPause(event) {
+        if (event.key === "F9" || event.keyCode === 120) { // 120 это код клавиши F9
+            if (socket) {
+                socket.emit('userPause', {
+                    id: socket.id,
+                    token: getCookie('token'),
+                    gameUUID: room
+                });
+            }
+        }
+    }
 
+
+    window.addEventListener('resize', adjustBackgroundImage);
 
     import {onDestroy} from 'svelte';
 
@@ -173,6 +224,8 @@
         if (bgImage) {
             document.body.removeChild(bgImage);
         }
+        socket.disconnect();
+        document.removeEventListener('keydown', handleUserPause);
     });
 
     let chatVisible = false;
@@ -183,12 +236,12 @@
 
 </script>
 
-<div class="wrapper game">
+<div class="wrapper game" style={gameStyle}>
     <div class="bg">
         <GameField {openBubbles} on:bubbleClicked={e => sendOpenedBubble(e.detail)} {isYourTurn}/>
     </div>
     <div class="toolbox">
-        <Toolbox {chatVisible} {socket} {messages} toggleChat={toggleChat}/>
+        <Toolbox {chatVisible} {socket} {totalSeconds} {messages} toggleChat={toggleChat}/>
         <div class="player-wrapper" style="display: {chatVisible ? 'none' : 'flex'};">
             {#each players as player}
                 <PlayerBlock {...player}/>

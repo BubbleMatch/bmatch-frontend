@@ -1,7 +1,7 @@
 <script>
-    import {onMount} from 'svelte';
-    import {getProfile} from "../utils/getProfile.js";
-    import {getCookie} from "../utils/cookies.js";
+    import { onMount, onDestroy } from 'svelte';
+    import { getProfile } from "../utils/getProfile.js";
+    import { getCookie } from "../utils/cookies.js";
 
     export let chatVisible;
     export let toggleChat;
@@ -11,10 +11,13 @@
     let seconds = 0;
     let messageContent = '';
     let roomId = '';
+    export let totalSeconds;
+
     export let messages = [];
 
     let currentUser = '';
     let chatContainer;
+    let countdownInterval;
 
     function handleMouseClick(event) {
         if (event.altKey && event.button === 0) {
@@ -34,14 +37,17 @@
         const segments = path.split('/');
         roomId = segments[segments.length - 1];
 
-
         document.addEventListener('mousedown', handleMouseClick);
 
         return () => {
             document.removeEventListener('mousedown', handleMouseClick);
+            clearInterval(countdownInterval);  // Clear interval on component destruction
         };
-
     });
+
+    $: if (typeof totalSeconds !== 'undefined') {
+        seconds = totalSeconds
+    }
 
     $: if (messages.length) {
         scrollToBottom();
@@ -60,7 +66,7 @@
             event.preventDefault();
             messageContent = event.target.value;
 
-            if(!canSend) return;
+            if (!canSend) return;
 
             if (messageContent.length < 1) {
                 messageContent = "GG, WP";
@@ -82,7 +88,6 @@
             }, 1000);
         }
     }
-
 </script>
 
 <div class="header">
@@ -95,7 +100,7 @@
         <div class={chatVisible ? 'game-icon' : 'chat-icon'}></div>
     </div>
     <div class="timer">
-        Time left: {minutes.toString().padStart(2, '0')}:{seconds.toString().padStart(2, '0')}
+        Time left: {(minutes || 0).toString().padStart(2, '0')}:{(seconds || 0).toString().padStart(2, '0')}
     </div>
 </div>
 <div class="chat" style="display: {chatVisible ? 'flex' : 'none'};">

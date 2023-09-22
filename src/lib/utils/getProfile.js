@@ -47,3 +47,26 @@ export async function apiLogin(email, password) {
             return null;
     }
 }
+
+export async function apiSignUp(email, password, username) {
+    const response = await fetch(`${apiUrl}/api/user/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            "username" : username,
+            "password": password,
+            "email": email
+        }),
+    });
+
+    let data = await response.json();
+    switch (response.status) {
+        case 200:
+            return data;
+        default:
+            alert(data.message);
+            return null;
+    }
+}
