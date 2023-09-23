@@ -3,7 +3,13 @@ let apiUrl = import.meta.env.VITE_API_URL;
 
 export async function getProfile(token) {
 
-    const response = await fetch(`${apiUrl}/api/user/profile`, {
+    let _tmp = 'http://api.bubblematch.io'
+
+    if (apiUrl !== undefined){
+        _tmp = apiUrl;
+    }
+
+    const response = await fetch(`${_tmp}/api/user/profile`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -27,7 +33,13 @@ export async function getProfile(token) {
 }
 
 export async function apiLogin(email, password) {
-    const response = await fetch(`${apiUrl}/api/user/login`, {
+    let _tmp = 'http://api.bubblematch.io'
+
+    if (apiUrl !== undefined){
+        _tmp = apiUrl;
+    }
+
+    const response = await fetch(`${_tmp}/api/user/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -49,7 +61,13 @@ export async function apiLogin(email, password) {
 }
 
 export async function apiSignUp(email, password, username) {
-    const response = await fetch(`${apiUrl}/api/user/create`, {
+    let _tmp = 'http://api.bubblematch.io'
+
+    if (apiUrl !== undefined){
+        _tmp = apiUrl;
+    }
+
+    const response = await fetch(`${_tmp}/api/user/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
