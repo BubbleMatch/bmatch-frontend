@@ -19,6 +19,11 @@ export function initializeGameSocket(
     }) {
 
     let wsUrl = import.meta.env.VITE_WS_GAME_URL;
+
+    if (wsUrl == undefined) {
+        wsUrl = 'wss://game.bubblematch.io'
+    }
+
     const socket = io.connect(`${wsUrl}/`);
 
     socket.on('playerList', playerList => {
@@ -45,7 +50,7 @@ export function initializeGameSocket(
         systemMessage(message);
     });
 
-    socket.on('userAlreadyInGame' , message => {
+    socket.on('userAlreadyInGame', message => {
         userAlreadyInGame(message);
     })
 
@@ -61,7 +66,7 @@ export function initializeGameSocket(
         openBubble(data);
     });
 
-    socket.on('isPaused', data =>{
+    socket.on('isPaused', data => {
         isPaused(data);
     })
     socket.on('closeBubbles', data => {
