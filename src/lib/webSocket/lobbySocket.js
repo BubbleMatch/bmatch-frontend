@@ -11,6 +11,11 @@ export function initializeLobbySocket({
                                       }) {
 
     let wsUrl = import.meta.env.VITE_WS_LOBBY_URL;
+
+    if (wsUrl == undefined) {
+        wsUrl = 'wss://lobby.bubblematch.io'
+    }
+
     const socket = io.connect(`${wsUrl}/`);
 
     socket.on('playerList', playerList => {

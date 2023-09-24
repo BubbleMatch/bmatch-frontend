@@ -1,9 +1,10 @@
 let apiUrl = import.meta.env.VITE_API_URL;
 
+const prodApiUrl = 'https://api.bubblematch.io';
 
 export async function getProfile(token) {
 
-    let _tmp = 'http://api.bubblematch.io'
+    let _tmp = prodApiUrl
 
     if (apiUrl !== undefined){
         _tmp = apiUrl;
@@ -33,7 +34,7 @@ export async function getProfile(token) {
 }
 
 export async function apiLogin(email, password) {
-    let _tmp = 'http://api.bubblematch.io'
+    let _tmp = prodApiUrl
 
     if (apiUrl !== undefined){
         _tmp = apiUrl;
@@ -61,7 +62,7 @@ export async function apiLogin(email, password) {
 }
 
 export async function apiSignUp(email, password, username) {
-    let _tmp = 'http://api.bubblematch.io'
+    let _tmp = prodApiUrl
 
     if (apiUrl !== undefined){
         _tmp = apiUrl;

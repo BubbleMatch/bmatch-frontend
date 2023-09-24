@@ -5,7 +5,4 @@ COPY . .
 
 RUN npm install && npm run build
 
-COPY env-to-file.sh ./env-to-file.sh
-RUN chmod +x ./env-to-file.sh
-
-CMD ["./env-to-file.sh"]
+CMD ["npm", "start"]
