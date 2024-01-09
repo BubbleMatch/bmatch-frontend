@@ -1,16 +1,17 @@
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
+import config from '../utils/config.js';  // Обновите путь, если путь к config.js отличается
 
 export function initializeLobbySocket({
-                                          onPlayerListUpdated,
-                                          onDisconnected,
-                                          systemMessage,
-                                          onLobbyRemoved,
-                                          userExist,
-                                          gameRedirect,
-                                          gameUUID
-                                      }) {
+    onPlayerListUpdated,
+    onDisconnected,
+    systemMessage,
+    onLobbyRemoved,
+    userExist,
+    gameRedirect,
+    gameUUID
+}) {
 
-    let wsUrl = import.meta.env.VITE_WS_LOBBY_URL;
+    let wsUrl = config.wsLobbyUrl;
 
     if (wsUrl == undefined) {
         wsUrl = 'wss://lobby.bubblematch.io'
@@ -20,7 +21,7 @@ export function initializeLobbySocket({
 
     socket.on('playerList', playerList => {
         let currentLobbyPlayers = JSON.parse(playerList.Players);
-        onPlayerListUpdated({currentLobbyPlayers: currentLobbyPlayers});
+        onPlayerListUpdated({ currentLobbyPlayers: currentLobbyPlayers });
     });
 
     socket.on('lobbyRemoved', () => {

@@ -1,5 +1,6 @@
-import {io} from 'socket.io-client';
+import { io } from 'socket.io-client';
 
+import config from '../utils/config.js';  // Обновите путь, если путь к config.js отличается
 
 export function initializeGameSocket(
     {
@@ -18,7 +19,7 @@ export function initializeGameSocket(
         onPing
     }) {
 
-    let wsUrl = import.meta.env.VITE_WS_GAME_URL;
+    let wsUrl = config.wsGameUrl;
 
     if (wsUrl == undefined) {
         wsUrl = 'wss://game.bubblematch.io'
