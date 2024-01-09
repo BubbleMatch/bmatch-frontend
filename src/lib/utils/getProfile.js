@@ -1,16 +1,9 @@
-let apiUrl = import.meta.env.VITE_API_URL;
-
-const prodApiUrl = 'https://api.bubblematch.io';
+import config from "./config";
+let apiUrl = config.apiUrl
 
 export async function getProfile(token) {
 
-    let _tmp = prodApiUrl
-
-    if (apiUrl !== undefined){
-        _tmp = apiUrl;
-    }
-
-    const response = await fetch(`${_tmp}/api/user/profile`, {
+    const response = await fetch(`${apiUrl}/api/user/profile`, {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -34,13 +27,8 @@ export async function getProfile(token) {
 }
 
 export async function apiLogin(email, password) {
-    let _tmp = prodApiUrl
 
-    if (apiUrl !== undefined){
-        _tmp = apiUrl;
-    }
-
-    const response = await fetch(`${_tmp}/api/user/login`, {
+    const response = await fetch(`${apiUrl}/api/user/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -62,19 +50,14 @@ export async function apiLogin(email, password) {
 }
 
 export async function apiSignUp(email, password, username) {
-    let _tmp = prodApiUrl
 
-    if (apiUrl !== undefined){
-        _tmp = apiUrl;
-    }
-
-    const response = await fetch(`${_tmp}/api/user/create`, {
+    const response = await fetch(`${apiUrl}/api/user/create`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            "username" : username,
+            "username": username,
             "password": password,
             "email": email
         }),
